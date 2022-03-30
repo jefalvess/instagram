@@ -28,7 +28,9 @@
 
     <div class="bx--row">
       <div class="bx--col-lg-3">
-        <div v-for="item in timeline" v-bind:key="item" class="bx--row">{{ item[0] }}</div>
+        <div v-for="item in timeline" v-bind:key="item" class="bx--row">
+          {{ item[0] }}
+        </div>
       </div>
     </div>
 

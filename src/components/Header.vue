@@ -1,17 +1,19 @@
 <template>
   <div style="margin-bottom: 3.1rem" class="bx--row">
     <cv-header aria-label="Carbon header">
+      <cv-header-name
+        style="cursor: pointer"
+        @click="redirect()"
+        prefix="Projeto"
+      >
+        [ Like ]
+      </cv-header-name>
 
-  
-        <cv-header-name style="cursor: pointer" @click="redirect()" prefix="Projeto">
-          [ Like ]
-        </cv-header-name>
-
-        <template slot="header-global">
-           <p style="cursor: pointer" @click="logoff()" class="confidential"> Sair </p>
-        </template>
-
-
+      <template slot="header-global">
+        <p style="cursor: pointer" @click="logoff()" class="confidential">
+          Sair
+        </p>
+      </template>
     </cv-header>
   </div>
 </template>
@@ -23,13 +25,11 @@ export default {
     redirect() {
       return window.open(`${window.location.origin}/`, '_self');
     },
-    async logoff (){
-      this.$cookies.remove("token");
-       this.$router.push('/');
-
-      
-    }
-  }
+    async logoff() {
+      this.$cookies.remove('token');
+      this.$router.push('/');
+    },
+  },
 };
 </script>
 

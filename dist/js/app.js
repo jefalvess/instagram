@@ -244,7 +244,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _com
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n/* harmony default export */ __webpack_exports__[\"default\"] = ({\n  name: 'header-page',\n  methods: {\n    redirect() {\n      return window.open(`${window.location.origin}/`, '_self');\n    },\n\n    async logoff() {\n      this.$cookies.remove(\"token\");\n      this.$router.push('/');\n    }\n\n  }\n});\n\n//# sourceURL=webpack:///./src/components/Header.vue?./node_modules/cache-loader/dist/cjs.js??ref--13-0!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--1-0!./node_modules/vue-loader/lib??vue-loader-options");
+eval("__webpack_require__.r(__webpack_exports__);\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n//\n/* harmony default export */ __webpack_exports__[\"default\"] = ({\n  name: 'header-page',\n  methods: {\n    redirect() {\n      return window.open(`${window.location.origin}/`, '_self');\n    },\n\n    async logoff() {\n      this.$cookies.remove('token');\n      this.$router.push('/');\n    }\n\n  }\n});\n\n//# sourceURL=webpack:///./src/components/Header.vue?./node_modules/cache-loader/dist/cjs.js??ref--13-0!./node_modules/babel-loader/lib!./node_modules/cache-loader/dist/cjs.js??ref--1-0!./node_modules/vue-loader/lib??vue-loader-options");
 
 /***/ }),
 
