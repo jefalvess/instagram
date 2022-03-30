@@ -15,7 +15,7 @@ const client = new Instagram({ username, password })
   // const teste = await client.follow({ userId: '3636495139' })
   // console.log(teste)
 
-  // console.log(await client.getUserByUsername({ username: 'Dc544060' }))
+  console.log(await client.getUserByUsername({ username: 'Dc544060' }))
   // console.log( await client.getProfile({ username: 'jefersonalvessz' }))
 
 

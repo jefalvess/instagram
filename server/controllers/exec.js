@@ -140,4 +140,14 @@ router.post('/ganhar/seguidores', validateUserToken, async (req, res) => {
   return res.status(200).json({ status: true, message: count });
 });
 
+
+// Criar novo token de acesso
+router.post('/info/perfil', validateUserToken, async (req, res) => {
+    
+      let { info, timeline }  = await instagram.pegarInfo( req.user.usuario, req.user.senha );
+ 
+      return res.status(200).json({ status: true, info: info, timeline, timeline });
+
+});
+
 module.exports = router;

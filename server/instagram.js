@@ -3,14 +3,13 @@ const Instagram = require('instagram-web-api');
 // const password = 'popo8010'
 
 const checarLogin = async function (username, password) {
-    console.log(username, password);
     let client = await new Instagram({ username, password });
     let response = await client.login();
     return response;
   };
 
 
-const ganharSeguidores = async function (username, password, userId) {
+  const ganharSeguidores = async function (username, password, userId) {
     let client = await new Instagram({ username, password });
     await client.login();
     let seguir = await client.follow({ userId: userId })
@@ -18,7 +17,19 @@ const ganharSeguidores = async function (username, password, userId) {
 };
 
 
+const pegarInfo = async function (username, password) {
+  let client = new Instagram({ username, password });
+  await client.login();
+  let timeline = await client.getPhotosByUsername({ username })
+  let info = await client.getUserByUsername({ username })
+
+  return { info, timeline } 
+
+};
+
+
 module.exports = {
   checarLogin,
   ganharSeguidores,
+  pegarInfo
 };
