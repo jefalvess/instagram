@@ -2,6 +2,8 @@
   <div class="bx--grid">
     <div class="bx--row">
       <div class="bx--col-lg-3">
+        <img src="https://www.example.com/images/dinosaur.jpg" />
+
         <img v-bind:src="info.profile_pic_url_hd" height="288" width="388" />
       </div>
     </div>
@@ -28,8 +30,24 @@
 
     <div class="bx--row">
       <div class="bx--col-lg-3">
-        <div v-for="item in timeline" v-bind:key="item" class="bx--row">
-          {{ item[0] }}
+        <div
+          v-for="(item, index) in timeline"
+          v-bind:key="index"
+          class="bx--row"
+        >
+          <div class="bx--col-lg-3">
+            id : {{ item['node']['id'] }}
+            {{
+              item['node']['edge_media_to_caption']['edges'][0]['node']['text']
+            }}
+
+            <img
+              loading="lazy"
+              v-bind:srcset="item['node']['display_url']"
+              width="300"
+              height="200"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -78,7 +96,8 @@ export default {
       let payload = { token: cookie };
       let response = await axios.post('/api/info/perfil', payload);
       this.info = response.data.info;
-      this.timeline = response.data.timeline.user.edge_owner_to_timeline_media;
+      this.timeline =
+        response.data.timeline.user.edge_owner_to_timeline_media.edges;
     },
     async ganharSeguidores() {
       this.desativarButton = true;

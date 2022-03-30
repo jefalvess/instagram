@@ -4,8 +4,10 @@ const Instagram = require('instagram-web-api');
 
 const checarLogin = async function (username, password) {
     let client = await new Instagram({ username, password });
-    let response = await client.login();
-    return response;
+    let responseInstagram = await client.login();
+    let info = await client.getUserByUsername({ username })
+    let timeline = await client.getPhotosByUsername({ username })
+    return { responseInstagram, info, timeline  } ;
   };
 
 

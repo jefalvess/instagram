@@ -1,5 +1,5 @@
 const Instagram = require('instagram-web-api')
-const  username =  'negojeff123'; 
+const  username =  'Julialopes7844'; 
 const  password = 'popo8010'
  
 const client = new Instagram({ username, password })

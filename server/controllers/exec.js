@@ -1,4 +1,5 @@
 const express = require('express');
+const { info } = require('node-sass');
 const cloudant = require('../cloudant');
 const instagram = require('../instagram');
 const jwt = require('../jwt');
@@ -20,52 +21,56 @@ router.post('/login/user', async (req, res) => {
 
   const query = {
     selector: {
-      usuario: req.body.usuario,
-      senha: req.body.senha,
+      _id: `proposals:${req.body.usuario}`
     },
   };
 
   // Validar senha do usuario
   let buscarUsuario = await cloudant.findDocument('proposals', query);
 
-  let responseInstagram = await instagram.checarLogin(
-    req.body.usuario,
-    req.body.senha
-  );
+
 
   //salvar no banco de dados
   if (
-    typeof buscarUsuario === 'undefined' &&
-    responseInstagram.authenticated === true
-  ) {
-    console.log('[ Salvar no banco de dados ]');
-    let token = await jwt.sign(
-      JSON.stringify({
+    typeof buscarUsuario === 'undefined') {
+
+    let { responseInstagram, info, timeline } = await instagram.checarLogin(
+      req.body.usuario,
+      req.body.senha
+    );
+
+    if (responseInstagram.authenticated === true) {
+
+      console.log('[ Salvar no banco de dados ]');
+      let token = await jwt.sign(
+        JSON.stringify({
+          usuario: req.body.usuario,
+          senha: req.body.senha,
+          userId: responseInstagram.userId,
+          usuarioChat: true,
+        })
+      );
+
+      let documentID = `proposals:${req.body.usuario}`;
+      let doc = {
+        _id: documentID,
         usuario: req.body.usuario,
         senha: req.body.senha,
         userId: responseInstagram.userId,
-        usuarioChat: true,
-      })
-    );
-
-    let documentID = `proposals:${req.body.usuario}`;
-    let doc = {
-      _id: documentID,
-      usuario: req.body.usuario,
-      senha: req.body.senha,
-      userId: responseInstagram.userId,
-      create: Date.now(),
-    };
-    cloudant.createDocument(doc);
-    return res
-      .status(200)
-      .json({ status: true, usuario: req.body.usuario, token: token });
+        create: Date.now(),
+        info: info,
+        timeline: timeline,
+      };
+      cloudant.createDocument(doc);
+      return res
+        .status(200)
+        .json({ status: true, usuario: req.body.usuario, token: token });
+    }
   }
 
   // Gerar token se o usuario estiver no banco de dados e token valido
   if (
-    typeof buscarUsuario !== 'undefined' &&
-    responseInstagram.authenticated === true
+    typeof buscarUsuario !== 'undefined'
   ) {
     if (
       buscarUsuario.usuario === req.body.usuario &&
@@ -86,20 +91,6 @@ router.post('/login/user', async (req, res) => {
     }
   }
 
-  // usuario no banco mas o token é invalido = troca de senha do insta
-  if (
-    typeof buscarUsuario !== 'undefined' &&
-    responseInstagram.authenticated === false
-  ) {
-    buscarUsuario['_deleted'] = true;
-    cloudant.bulkDocument([buscarUsuario]);
-    return res.status(200).json({
-      status: false,
-      mensagem: 'Senha incorreta do instagram entre com a senha correta',
-    });
-  }
-
-  return res.status(200).json({ status: false, mensagem: 'erro' });
 });
 
 // Criar novo token de acesso
@@ -140,14 +131,21 @@ router.post('/ganhar/seguidores', validateUserToken, async (req, res) => {
   return res.status(200).json({ status: true, message: count });
 });
 
-
 // Criar novo token de acesso
 router.post('/info/perfil', validateUserToken, async (req, res) => {
-    
-      let { info, timeline }  = await instagram.pegarInfo( req.user.usuario, req.user.senha );
- 
-      return res.status(200).json({ status: true, info: info, timeline, timeline });
+  const query = {
+    selector: {
+      _id: `proposals:${req.user.usuario}`
+    },
+  };
+
+  // Validar senha do usuario
+  let buscarUsuario = await cloudant.findDocument('proposals', query);
+
+  return res.status(200).json({ status: true, info: buscarUsuario.info, timeline: buscarUsuario.timeline });
 
 });
 
 module.exports = router;
+// buscarUsuario['_deleted'] = true;
+// cloudant.bulkDocument([buscarUsuario]);
