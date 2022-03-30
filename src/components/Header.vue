@@ -4,7 +4,7 @@
 
   
         <cv-header-name style="cursor: pointer" @click="redirect()" prefix="Projeto">
-          [Rede Social]
+          [ Like ]
         </cv-header-name>
 
         <template slot="header-global">
