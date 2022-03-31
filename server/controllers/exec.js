@@ -1,6 +1,6 @@
 const express = require('express');
-const { info } = require('node-sass');
 const cloudant = require('../cloudant');
+const download = require('../download');
 const instagram = require('../instagram');
 const jwt = require('../jwt');
 const { validateUserToken } = require('./authenticator.js');
@@ -142,7 +142,18 @@ router.post('/info/perfil', validateUserToken, async (req, res) => {
   // Validar senha do usuario
   let buscarUsuario = await cloudant.findDocument('proposals', query);
 
-  return res.status(200).json({ status: true, info: buscarUsuario.info, timeline: buscarUsuario.timeline });
+  await download.imgDownload(buscarUsuario.info.profile_pic_url_hd, buscarUsuario.userId, function () { console.log('done'); })
+
+
+  let timeline = buscarUsuario.timeline.user.edge_owner_to_timeline_media.edges;
+  let newTimeline = [];
+
+  for (let i = 0; i < timeline.length; i++) {
+    newTimeline.push({ id: timeline[i]['node']['id'], likes: timeline[i]['node']['edge_media_preview_like']['count'] })
+    await download.imgDownload(timeline[i]['node']['display_url'], timeline[i]['node']['id'], function () { console.log('done'); })
+  }
+
+  return res.status(200).json({ status: true, info: buscarUsuario.info, timeline: newTimeline });
 
 });
 

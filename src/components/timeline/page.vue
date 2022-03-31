@@ -1,69 +1,127 @@
 <template>
   <div class="bx--grid">
     <div class="bx--row">
-      <div class="bx--col-lg-3">
-        <img src="https://www.example.com/images/dinosaur.jpg" />
+      <!-- info perfil -->
+      <div
+        style="border-radius: 6%; text-align: center;  border: 1px solid black; margin-right: 1rem; padding-bottom: 1rem; margin-bottom: 2rem;"
 
-        <img v-bind:src="info.profile_pic_url_hd" height="288" width="388" />
-      </div>
-    </div>
-
-    <div class="bx--row">
-      <div class="bx--col-lg-3">
-        {{ info.full_name }}
-      </div>
-    </div>
-
-    <div class="bx--row">
-      <div class="bx--col-lg-3">
-        {{ info.biography }}
-      </div>
-    </div>
-
-    <div class="bx--row">
-      <div class="bx--col-lg-3">Seguidores : {{ info.edge_followed_by }}</div>
-    </div>
-
-    <div class="bx--row">
-      <div class="bx--col-lg-3">Seguindo : {{ info.edge_follow }}</div>
-    </div>
-
-    <div class="bx--row">
-      <div class="bx--col-lg-3">
-        <div
-          v-for="(item, index) in timeline"
-          v-bind:key="index"
-          class="bx--row"
-        >
-          <div class="bx--col-lg-3">
-            id : {{ item['node']['id'] }}
-            {{
-              item['node']['edge_media_to_caption']['edges'][0]['node']['text']
-            }}
-
+        class="bx--col-lg-3" >
+        <!--Foto -->
+        <div class="bx--row">
+          <div class="bx--col-lg">
             <img
-              v-bind:srcset="item['node']['display_url']"
+              style="border-radius: 50%"
+              v-bind:src="rota + info.id + prefix"
+              height="300"
               width="300"
-              height="200"
             />
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="bx--row">
-      <div style="cursor: pointer" class="bx--col-lg-3">
-        <button
-          class="bx--btn bx--btn--primary"
-          :disabled="desativarButton"
-          @click="ganharSeguidores()"
-          type="button"
-        >
-          Ganhar seguidores
-        </button>
-        {{ this.mensagens }}
+        <!--nome -->
+        <div class="bx--row">
+          <div class="bx--col-lg">
+            <p><strong> Nome: </strong> {{ info.full_name }}</p>
+          </div>
+        </div>
+
+        <!--bio -->
+        <div class="bx--row">
+          <div class="bx--col-lg">
+            <p><strong> Bio: </strong> {{ info.biography }}</p>
+          </div>
+        </div>
+
+        <!-- seguidores -->
+        <div class="bx--row">
+          <div class="bx--col-lg">
+            <p>
+              <strong>Seguidores : </strong>{{ info.edge_followed_by.count }}
+            </p>
+          </div>
+        </div>
+
+        <!--seguindo -->
+        <div class="bx--row">
+          <div class="bx--col-lg">
+            <p><strong> Seguindo : </strong> {{ info.edge_follow.count }}</p>
+          </div>
+        </div>
+
+        <!--mensagem  -->
+        <div class="bx--row">
+          <div style="cursor: pointer" class="bx--col-lg">
+            <p>
+              Para ganhar seguidores em nosso site, clique no botao abaixo !
+            </p>
+          </div>
+        </div>
+
+        <!-- botao seguidor -->
+        <div class="bx--row">
+          <div style="text-align: center;" class="bx--col-lg">
+            <button
+              class="bx--btn bx--btn--primary"
+              :disabled="desativarButton"
+              @click="ganharSeguidores()"
+              type="button"
+            >
+              Ganhar seguidores
+            </button>
+            {{ this.mensagens }}
+          </div>
+        </div>
       </div>
-      <div style="overflow: auto; height: 100vh" class="bx--col-lg-8">-</div>
+      <!-- timeline -->
+      <div style="overflow: auto; height: 100vh;" class="bx--col-lg-8">
+        <div class="bx--row">
+          <div class="bx--col-lg">
+            <div
+              v-for="(item, index) in timeline"
+              v-bind:key="index"
+              class="bx--row"
+              style="padding-top: 1rem; padding-bottom: 1rem; margin-bottom: 2rem;"
+            >
+              <div class="bx--col-lg">
+                <div class="bx--row">
+                  <div class="bx--col-lg">
+                    <p><strong> id publicaçao : </strong> {{ item['id'] }}</p>
+                  </div>
+                </div>
+
+                <div class="bx--row">
+                  <div class="bx--col-lg">
+                    <img
+                      v-bind:src="rota + item.id + prefix"
+                      height="250"
+                      width="250"
+                    />
+                  </div>
+                </div>
+
+                <div class="bx--row">
+                  <div class="bx--col-lg">
+                    <p><strong> Likes : </strong> {{ item['likes'] }}</p>
+                  </div>
+                </div>
+
+                <div class="bx--row">
+                  <div style="cursor: pointer" class="bx--col-lg">
+                    <button
+                      class="bx--btn bx--btn--primary"
+                      :disabled="desativarButton"
+                      @click="ganharlike()"
+                      type="button"
+                    >
+                      Ganhar like
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -81,6 +139,8 @@ export default {
       mensagens: '',
       info: {},
       timeline: [],
+      rota: '/images/',
+      prefix: '.png',
     };
   },
   computed: {
@@ -95,8 +155,7 @@ export default {
       let payload = { token: cookie };
       let response = await axios.post('/api/info/perfil', payload);
       this.info = response.data.info;
-      this.timeline =
-        response.data.timeline.user.edge_owner_to_timeline_media.edges;
+      this.timeline = response.data.timeline;
     },
     async ganharSeguidores() {
       this.desativarButton = true;
@@ -106,9 +165,22 @@ export default {
       this.desativarButton = false;
       this.mensagens = response.data.message;
     },
+    async ganharlike() {
+      alert('funçao em desenvolvimento ');
+    },
   },
-  mounted() {
-    this.checarUsuario();
+  async mounted() {
+    await this.checarUsuario();
   },
 };
 </script>
+
+<style lang="scss">
+.bx--grid {
+ margin-left: 0;
+}
+p {
+  font-size: 1.2em;
+  color: black;
+}
+</style>

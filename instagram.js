@@ -15,6 +15,7 @@ app.use(history());
 app.use(staticFileMiddleware);
 
 app.use('/', express.static('./dist'));
-app.use('/static', express.static(__dirname + '/server/uploads'));
+console.log(__dirname + '/images')
+app.use('/static', express.static(__dirname + '/images'));
 
 require('./server/server')(app);
