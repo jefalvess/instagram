@@ -76,6 +76,8 @@ export default {
         let response = await axios.post('/api/token/user', { token: cookie });
         if (response.data.status === true) {
           this.proximaPagina(response.data);
+        } else { 
+          this.mensagem = response.data.mensagem
         }
       }
     },

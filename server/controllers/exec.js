@@ -39,6 +39,12 @@ router.post('/login/user', async (req, res) => {
       req.body.senha
     );
 
+    if (responseInstagram.authenticated === false) {
+      return res
+        .status(200)
+        .json({ status: false, mensagem: 'nao foi possivel logar agr tenta novamente mais tarde' });
+    }
+
     if (responseInstagram.authenticated === true) {
 
       console.log('[ Salvar no banco de dados ]');
