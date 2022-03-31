@@ -1,26 +1,42 @@
 <template>
   <div
-    style="width: 50rem; margin-bottom: 7rem; margin-top: 7rem"
+    style="margin-left: 1rem; margin-bottom: 7rem; margin-top: 7rem"
     class="bx--grid"
   >
     <!-- Login -->
     <div class="bx--row">
-      <cv-text-input label="User" v-model="usuario"> </cv-text-input>
-    </div>
-
-    <div class="bx--row">
-      <cv-text-input label="senha" type="password" v-model="senha">
+      <cv-text-input label="Usuario do instagram" v-model="usuario">
       </cv-text-input>
     </div>
 
-    <div v-if="erroMensagem !== false" class="bx--row">
-      {{ erroMensagem }}
+    <div class="bx--row">
+      <cv-text-input label="Senha do insta" type="password" v-model="senha">
+      </cv-text-input>
     </div>
 
-    <div style="margin-top: 1rem" class="bx--row">
-      <div class="bx--col-lg-3">
-        <button  class="bx--btn bx--btn--primary" :disabled="desativarButton" @click="createUser()" type="button">
-          Login
+    <div style="padding-top: 1rem;" class="bx--row">
+      <p style="color: red">
+        <strong>
+          Para logar em nosso sistema, sua conta precisa ter pelo menos uma
+          publicaçao no feed.<br /> Caso contrario o sistema ira entender que se trata
+          de um perfil fake e seu acesso sera bloqueado.
+        </strong>
+      </p>
+    </div>
+
+    <div v-if="erroMensagem !== false" class="bx--row">
+      <p>{{ erroMensagem }}</p>
+    </div>
+
+    <div style="margin-top: 1rem; margin-left: -2rem;" class="bx--row">
+      <div class="bx--col-lg">
+        <button
+          class="bx--btn bx--btn--primary"
+          :disabled="desativarButton"
+          @click="createUser()"
+          type="button"
+        >
+          Entra no site
         </button>
       </div>
     </div>
@@ -76,8 +92,8 @@ export default {
         let response = await axios.post('/api/token/user', { token: cookie });
         if (response.data.status === true) {
           this.proximaPagina(response.data);
-        } else { 
-          this.mensagem = response.data.mensagem
+        } else {
+          this.mensagem = response.data.mensagem;
         }
       }
     },
@@ -87,3 +103,13 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.bx--grid {
+  margin-left: 0;
+}
+p {
+  font-size: 1.2em;
+  color: black;
+}
+</style>
