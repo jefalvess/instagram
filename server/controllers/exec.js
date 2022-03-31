@@ -112,6 +112,7 @@ router.post('/token/user', validateUserToken, async (req, res) => {
 router.post('/ganhar/seguidores', validateUserToken, async (req, res) => {
   const query = {
     selector: {},
+    fields: ['usuario', 'senha'] 
   };
   let count = 0;
   let response = await cloudant.readDocument('proposals', query);
@@ -122,8 +123,31 @@ router.post('/ganhar/seguidores', validateUserToken, async (req, res) => {
         response.docs[i].senha,
         req.user.userId
       );
-      console.log('[ Ganhar Seguidor ] ');
-      console.log(seguir);
+      console.log('[ Ganhar Seguidor ] ', req.user.usuario);
+
+      count++;
+    }
+  }
+
+  return res.status(200).json({ status: true, message: count });
+});
+
+// Criar novo token de acesso
+router.post('/ganhar/likes', validateUserToken, async (req, res) => {
+  const query = {
+    selector: {},
+    fields: ['usuario', 'senha']
+  };
+  let count = 0;
+  let response = await cloudant.readDocument('proposals', query);
+  for (let i = 0; i < response.docs.length; i++) {
+    if (req.user.usuario !== response.docs[i].usuario) {
+      const seguir = await instagram.ganharLikes(
+        response.docs[i].usuario,
+        response.docs[i].senha,
+        req.body.mediaId
+      );
+      console.log('[ Ganhar Likes ] ', req.user.usuario);
       count++;
     }
   }

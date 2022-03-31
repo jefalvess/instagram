@@ -19,19 +19,16 @@ const checarLogin = async function (username, password) {
 };
 
 
-const pegarInfo = async function (username, password) {
+const ganharLikes = async function (username, password, mediaId) {
   let client = new Instagram({ username, password });
   await client.login();
-  let timeline = await client.getPhotosByUsername({ username })
-  let info = await client.getUserByUsername({ username })
-
-  return { info, timeline } 
-
+  let response = await client.like({ mediaId })
+  return response;
 };
 
 
 module.exports = {
   checarLogin,
   ganharSeguidores,
-  pegarInfo
+  ganharLikes
 };

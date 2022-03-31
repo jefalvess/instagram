@@ -3,9 +3,16 @@
     <div class="bx--row">
       <!-- info perfil -->
       <div
-        style="border-radius: 6%; text-align: center;  border: 1px solid black; margin-right: 1rem; padding-bottom: 1rem; margin-bottom: 2rem;"
-
-        class="bx--col-lg-3" >
+        style="
+          border-radius: 6%;
+          text-align: center;
+          border: 1px solid black;
+          margin-right: 1rem;
+          padding-bottom: 1rem;
+          margin-bottom: 2rem;
+        "
+        class="bx--col-lg-3"
+      >
         <!--Foto -->
         <div class="bx--row">
           <div class="bx--col-lg">
@@ -59,7 +66,7 @@
 
         <!-- botao seguidor -->
         <div class="bx--row">
-          <div style="text-align: center;" class="bx--col-lg">
+          <div style="text-align: center" class="bx--col-lg">
             <button
               class="bx--btn bx--btn--primary"
               :disabled="desativarButton"
@@ -73,14 +80,18 @@
         </div>
       </div>
       <!-- timeline -->
-      <div style="overflow: auto; height: 100vh;" class="bx--col-lg-8">
+      <div style="overflow: auto; height: 100vh" class="bx--col-lg-8">
         <div class="bx--row">
           <div class="bx--col-lg">
             <div
               v-for="(item, index) in timeline"
               v-bind:key="index"
               class="bx--row"
-              style="padding-top: 1rem; padding-bottom: 1rem; margin-bottom: 2rem;"
+              style="
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+                margin-bottom: 2rem;
+              "
             >
               <div class="bx--col-lg">
                 <div class="bx--row">
@@ -109,8 +120,8 @@
                   <div style="cursor: pointer" class="bx--col-lg">
                     <button
                       class="bx--btn bx--btn--primary"
-                      :disabled="desativarButton"
-                      @click="ganharlike()"
+                      :disabled="desativarButtonLike"
+                      @click="ganharlike(item.id)"
                       type="button"
                     >
                       Ganhar like
@@ -141,6 +152,8 @@ export default {
       timeline: [],
       rota: '/images/',
       prefix: '.png',
+      desativarButtonLike: false
+
     };
   },
   computed: {
@@ -165,8 +178,13 @@ export default {
       this.desativarButton = false;
       this.mensagens = response.data.message;
     },
-    async ganharlike() {
-      alert('funçao em desenvolvimento ');
+    async ganharlike(id) {
+      this.desativarButtonLike = true;
+      let cookie = this.$cookies.get('token');
+      let payload = { token: cookie, mediaId: id };
+      let response = await axios.post('/api/ganhar/likes', payload);
+      this.desativarButtonLike = false;
+      console.log(response.data);
     },
   },
   async mounted() {
@@ -177,7 +195,7 @@ export default {
 
 <style lang="scss">
 .bx--grid {
- margin-left: 0;
+  margin-left: 0;
 }
 p {
   font-size: 1.2em;
