@@ -42,7 +42,6 @@
             }}
 
             <img
-              loading="lazy"
               v-bind:srcset="item['node']['display_url']"
               width="300"
               height="200"
