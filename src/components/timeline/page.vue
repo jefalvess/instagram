@@ -18,7 +18,7 @@
           <div class="bx--col-lg">
             <img
               style="border-radius: 50%"
-              v-bind:src="rota + info.id + prefix"
+              v-bind:src="rota + info.userId + prefix"
               height="300"
               width="300"
             />

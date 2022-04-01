@@ -21,32 +21,28 @@ router.post('/login/user', async (req, res) => {
 
   const query = {
     selector: {
-      _id: `proposals:${req.body.usuario}`
+      _id: `proposals:${req.body.usuario}`,
     },
   };
 
   // Validar senha do usuario
   let buscarUsuario = await cloudant.findDocument('proposals', query);
 
-
-
   //salvar no banco de dados
-  if (
-    typeof buscarUsuario === 'undefined') {
-
-    let { responseInstagram, info, timeline } = await instagram.checarLogin(
-      req.body.usuario,
-      req.body.senha
-    );
+  if (typeof buscarUsuario === 'undefined') {
+    let { responseInstagram, info, timelineArray } =
+      await instagram.checarLogin(req.body.usuario, req.body.senha);
 
     if (responseInstagram.authenticated === false) {
       return res
         .status(200)
-        .json({ status: false, mensagem: 'nao foi possivel logar agr tenta novamente mais tarde' });
+        .json({
+          status: false,
+          mensagem: 'nao foi possivel logar agr tenta novamente mais tarde',
+        });
     }
 
     if (responseInstagram.authenticated === true) {
-
       console.log('[ Salvar no banco de dados ]');
       let token = await jwt.sign(
         JSON.stringify({
@@ -65,7 +61,7 @@ router.post('/login/user', async (req, res) => {
         userId: responseInstagram.userId,
         create: Date.now(),
         info: info,
-        timeline: timeline,
+        timeline: timelineArray,
       };
       cloudant.createDocument(doc);
       return res
@@ -75,9 +71,7 @@ router.post('/login/user', async (req, res) => {
   }
 
   // Gerar token se o usuario estiver no banco de dados e token valido
-  if (
-    typeof buscarUsuario !== 'undefined'
-  ) {
+  if (typeof buscarUsuario !== 'undefined') {
     if (
       buscarUsuario.usuario === req.body.usuario &&
       buscarUsuario.senha === req.body.senha
@@ -96,7 +90,6 @@ router.post('/login/user', async (req, res) => {
         .json({ status: true, usuario: buscarUsuario.usuario, token: token });
     }
   }
-
 });
 
 // Criar novo token de acesso
@@ -118,7 +111,7 @@ router.post('/token/user', validateUserToken, async (req, res) => {
 router.post('/ganhar/seguidores', validateUserToken, async (req, res) => {
   const query = {
     selector: {},
-    fields: ['usuario', 'senha'] 
+    fields: ['usuario', 'senha'],
   };
   let count = 0;
   let response = await cloudant.readDocument('proposals', query);
@@ -142,7 +135,7 @@ router.post('/ganhar/seguidores', validateUserToken, async (req, res) => {
 router.post('/ganhar/likes', validateUserToken, async (req, res) => {
   const query = {
     selector: {},
-    fields: ['usuario', 'senha']
+    fields: ['usuario', 'senha'],
   };
   let count = 0;
   let response = await cloudant.readDocument('proposals', query);
@@ -165,28 +158,50 @@ router.post('/ganhar/likes', validateUserToken, async (req, res) => {
 router.post('/info/perfil', validateUserToken, async (req, res) => {
   const query = {
     selector: {
-      _id: `proposals:${req.user.usuario}`
+      _id: `proposals:${req.user.usuario}`,
     },
   };
 
   // Validar senha do usuario
   let buscarUsuario = await cloudant.findDocument('proposals', query);
+  console.log(buscarUsuario)
 
-  await download.imgDownload(buscarUsuario.info.profile_pic_url_hd, buscarUsuario.userId, function () { console.log('done'); })
+  let b = await download.imgDownload(
+    buscarUsuario.info.profile_pic_url_hd,
+    buscarUsuario.userId,
+    function () {
+      console.log('done');
+    }
+  );
 
-
-  let timeline = buscarUsuario.timeline.user.edge_owner_to_timeline_media.edges;
-  let newTimeline = [];
+  let timeline = buscarUsuario.timeline;
 
   for (let i = 0; i < timeline.length; i++) {
-    newTimeline.push({ id: timeline[i]['node']['id'], likes: timeline[i]['node']['edge_media_preview_like']['count'] })
-    await download.imgDownload(timeline[i]['node']['display_url'], timeline[i]['node']['id'], function () { console.log('done'); })
+    let a = await download.imgDownload(
+      timeline[i]['img'],
+      timeline[i]['id'],
+      function () {
+        console.log('done');
+      }
+    );
   }
 
-  return res.status(200).json({ status: true, info: buscarUsuario.info, timeline: newTimeline });
+  return res
+    .status(200)
+    .json({ status: true, info: buscarUsuario.info, timeline: timeline });
+});
 
+// Criar novo token de acesso
+router.post('/delete', async (req, res) => {
+  const query = {
+    selector: {},
+  };
+  let response = await cloudant.readDocument('proposals', query);
+  for (let i = 0; i < response.docs.length; i++) {
+    response.docs[i]['_deleted'] = true;
+  }
+  cloudant.bulkDocument(response.docs);
+  return res.status(200).json({ status: response.docs });
 });
 
 module.exports = router;
-// buscarUsuario['_deleted'] = true;
-// cloudant.bulkDocument([buscarUsuario]);
