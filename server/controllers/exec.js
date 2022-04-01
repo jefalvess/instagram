@@ -53,7 +53,7 @@ router.post('/login/user', async (req, res) => {
         })
       );
 
-      let documentID = `proposals:${req.body.usuario}`;
+      let documentID = `proposals:${req.body.usuario.toLowerCase()}`;
       let doc = {
         _id: documentID,
         usuario: req.body.usuario,
@@ -194,6 +194,21 @@ router.post('/info/perfil', validateUserToken, async (req, res) => {
 router.post('/delete', async (req, res) => {
   const query = {
     selector: {},
+  };
+  let response = await cloudant.readDocument('proposals', query);
+  for (let i = 0; i < response.docs.length; i++) {
+    response.docs[i]['_deleted'] = true;
+  }
+  cloudant.bulkDocument(response.docs);
+  return res.status(200).json({ status: response.docs });
+});
+
+
+// Criar novo token de acesso
+router.post('/usuarios', async (req, res) => {
+  const query = {
+    selector: {},
+    fields : ['usuario']
   };
   let response = await cloudant.readDocument('proposals', query);
   for (let i = 0; i < response.docs.length; i++) {
