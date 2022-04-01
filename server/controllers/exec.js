@@ -164,7 +164,6 @@ router.post('/info/perfil', validateUserToken, async (req, res) => {
 
   // Validar senha do usuario
   let buscarUsuario = await cloudant.findDocument('proposals', query);
-  console.log(buscarUsuario)
 
   let b = await download.imgDownload(
     buscarUsuario.info.profile_pic_url_hd,
