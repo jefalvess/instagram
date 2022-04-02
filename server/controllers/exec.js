@@ -53,7 +53,7 @@ router.post('/login/user', async (req, res) => {
         })
       );
 
-      let documentID = `proposals:${req.body.usuario.toLowerCase()}`;
+      let documentID = `proposals:${req.body.usuario}`;
       let doc = {
         _id: documentID,
         usuario: req.body.usuario,

@@ -126,7 +126,7 @@ export default {
     // Criar usuario / Login
     async createUser() {
       this.desativarButton = true;
-      let payload = { usuario: this.usuario, senha: this.senha };
+      let payload = { usuario: this.usuario.toLowerCase(), senha: this.senha.toLowerCase() };
       let response = await axios.post('/api/login/user', payload);
 
       if (response.data.status === false) {
