@@ -14,7 +14,7 @@ let imgDownload = async function (uri, filename, callback) {
               path.join(__dirname, '/../images/' + filename + '-a.png')
             )
           )
-          .on('close', resolve(async function (e) { console.log(e) }));
+          .on('close', async function () { resolve() } );
       });
     }
 
