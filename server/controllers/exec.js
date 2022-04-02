@@ -166,14 +166,14 @@ router.post('/info/perfil', validateUserToken, async (req, res) => {
   // Validar senha do usuario
   let buscarUsuario = await cloudant.findDocument('proposals', query);
 
-  // // download foto de perfil 
-  // await download.imgDownload(
-  //   buscarUsuario.info.profile_pic_url_hd,
-  //   buscarUsuario.userId,
-  //   function () {
-  //     console.log('done');
-  //   }
-  // );
+  // download foto de perfil 
+  await download.imgDownload(
+    buscarUsuario.info.profile_pic_url_hd,
+    buscarUsuario.userId,
+    function () {
+      console.log('done');
+    }
+  );
 
   let timeline = buscarUsuario.timeline;
 
