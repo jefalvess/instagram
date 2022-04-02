@@ -151,7 +151,7 @@ export default {
       mensagens: '',
       info: {},
       timeline: [],
-      rota: '/images/',
+      rota: '/uploads/',
       prefix: '-a.png',
       desativarButtonLike: false
 
