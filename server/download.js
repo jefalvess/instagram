@@ -3,9 +3,9 @@ const request = require('request');
 const path = require('path');
 
 let imgDownload = async function (uri, filename, callback) {
-  return new Promise((resolve, reject) => {
+
     if (fs.existsSync(path.join(__dirname, '/../images/' + filename + '-a.png'))) {
-      resolve(true)
+      console.log('existe')
     } else {
       request.head(uri, async function (err, res, body) {
         request(uri)
@@ -14,12 +14,9 @@ let imgDownload = async function (uri, filename, callback) {
               path.join(__dirname, '/../images/' + filename + '-a.png')
             )
           )
-          .on('close', async function () { resolve() } );
+          .on('close', callback);
       });
     }
-
-  })
-
 };
 
 module.exports = {
