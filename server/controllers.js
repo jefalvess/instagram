@@ -1,9 +1,9 @@
 const express = require('express');
-const cloudant = require('../cloudant');
-const download = require('../download');
-const instagram = require('../instagram');
-const jwt = require('../jwt');
-const { validateUserToken } = require('./authenticator.js');
+const cloudant = require('./helpers/cloudant');
+const download = require('./helpers/download');
+const instagram = require('./helpers/instagram');
+const jwt = require('./helpers/jwt');
+const { validateUserToken } = require('./helpers/authenticator.js');
 
 const router = express.Router();
 

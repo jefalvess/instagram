@@ -8,7 +8,7 @@ let imgDownload = async function (uri, filename, callback) {
       resolve();
     } else {
       request.head(uri, async function (err, res, body) {
-        request(uri).pipe(fs.createWriteStream(path.join(__dirname, '/../uploads/' + filename + '-a.png'))).on('close', function () {
+        request(uri).pipe(fs.createWriteStream(path.join(__dirname, '/../../uploads/' + filename + '-a.png'))).on('close', function () {
           resolve(body);
         })
       });
