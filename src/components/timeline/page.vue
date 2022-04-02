@@ -152,7 +152,7 @@ export default {
       info: {},
       timeline: [],
       rota: '/images/',
-      prefix: '.png',
+      prefix: '-a.png',
       desativarButtonLike: false
 
     };
