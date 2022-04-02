@@ -137,9 +137,9 @@ export default {
 
       if (response.data.status === true) {
         this.proximaPagina(response.data);
+      } else {
+        this.$router.push('/info');
       }
-
-      this.$router.push('/info');
     },
     proximaPagina(data) {
       this.$cookies.set('token', data.token, '8h');
