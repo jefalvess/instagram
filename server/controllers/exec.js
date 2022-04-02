@@ -28,20 +28,33 @@ router.post('/login/user', async (req, res) => {
   // Validar senha do usuario
   let buscarUsuario = await cloudant.findDocument('proposals', query);
 
+
+
+  // Gerar token se o usuario estiver no banco de dados e token valido
+  if (typeof buscarUsuario !== 'undefined') {
+    if (
+      buscarUsuario.usuario === req.body.usuario &&
+      buscarUsuario.senha === req.body.senha
+    ) {
+      console.log('[ Validado com sucesso ] ');
+      let token = await jwt.sign(
+        JSON.stringify({
+          usuario: req.body.usuario,
+          senha: req.body.senha,
+          userId: buscarUsuario.userId,
+          usuarioChat: true,
+        })
+      );
+      return res
+        .status(200)
+        .json({ status: true, usuario: buscarUsuario.usuario, token: token });
+    }
+  }
+
   //salvar no banco de dados
   if (typeof buscarUsuario === 'undefined') {
     let { responseInstagram, info, timelineArray } =
       await instagram.checarLogin(req.body.usuario, req.body.senha);
-
-    if (responseInstagram.authenticated === false) {
-      return res
-        .status(200)
-        .json({
-          status: false,
-          mensagem: 'nao foi possivel logar agr tenta novamente mais tarde',
-        });
-    }
-
     if (responseInstagram.authenticated === true) {
       console.log('[ Salvar no banco de dados ]');
       let token = await jwt.sign(
@@ -63,31 +76,19 @@ router.post('/login/user', async (req, res) => {
         info: info,
         timeline: timelineArray,
       };
-      cloudant.createDocument(doc);
+      await cloudant.createDocument(doc);
       return res
         .status(200)
         .json({ status: true, usuario: req.body.usuario, token: token });
     }
-  }
 
-  // Gerar token se o usuario estiver no banco de dados e token valido
-  if (typeof buscarUsuario !== 'undefined') {
-    if (
-      buscarUsuario.usuario === req.body.usuario &&
-      buscarUsuario.senha === req.body.senha
-    ) {
-      console.log('[ Validado com sucesso ] ');
-      let token = await jwt.sign(
-        JSON.stringify({
-          usuario: req.body.usuario,
-          senha: req.body.senha,
-          userId: buscarUsuario.userId,
-          usuarioChat: true,
-        })
-      );
+    if (responseInstagram.authenticated === false) {
       return res
         .status(200)
-        .json({ status: true, usuario: buscarUsuario.usuario, token: token });
+        .json({
+          status: false,
+          mensagem: 'nao foi possivel logar agr tenta novamente mais tarde',
+        });
     }
   }
 });
@@ -165,18 +166,19 @@ router.post('/info/perfil', validateUserToken, async (req, res) => {
   // Validar senha do usuario
   let buscarUsuario = await cloudant.findDocument('proposals', query);
 
-  let b = await download.imgDownload(
-    buscarUsuario.info.profile_pic_url_hd,
-    buscarUsuario.userId,
-    function () {
-      console.log('done');
-    }
-  );
+  // // download foto de perfil 
+  // await download.imgDownload(
+  //   buscarUsuario.info.profile_pic_url_hd,
+  //   buscarUsuario.userId,
+  //   function () {
+  //     console.log('done');
+  //   }
+  // );
 
   let timeline = buscarUsuario.timeline;
 
   for (let i = 0; i < timeline.length; i++) {
-    let a = await download.imgDownload(
+    await download.imgDownload(
       timeline[i]['img'],
       timeline[i]['id'],
       function () {
@@ -208,7 +210,7 @@ router.post('/delete', async (req, res) => {
 router.post('/usuarios', async (req, res) => {
   const query = {
     selector: {},
-    fields : ['usuario']
+    // fields: ['usuario']
   };
   let response = await cloudant.readDocument('proposals', query);
   cloudant.bulkDocument(response.docs);
