@@ -167,10 +167,7 @@ router.post('/info/perfil', validateUserToken, async (req, res) => {
 
   let b = await download.imgDownload(
     buscarUsuario.info.profile_pic_url_hd,
-    buscarUsuario.userId,
-    function () {
-      console.log('done');
-    }
+    buscarUsuario.userId
   );
 
   let timeline = buscarUsuario.timeline;
@@ -178,10 +175,7 @@ router.post('/info/perfil', validateUserToken, async (req, res) => {
   for (let i = 0; i < timeline.length; i++) {
     let a = await download.imgDownload(
       timeline[i]['img'],
-      timeline[i]['id'],
-      function () {
-        console.log('done');
-      }
+      timeline[i]['id']
     );
   }
 
@@ -208,7 +202,7 @@ router.post('/delete', async (req, res) => {
 router.post('/usuarios', async (req, res) => {
   const query = {
     selector: {},
-    fields : ['usuario']
+    fields: ['usuario'],
   };
   let response = await cloudant.readDocument('proposals', query);
   cloudant.bulkDocument(response.docs);
