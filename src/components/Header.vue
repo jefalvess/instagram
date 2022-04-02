@@ -4,13 +4,13 @@
       <cv-header-name
         style="cursor: pointer"
         @click="redirect()"
-        prefix="Projeto"
+        prefix="InstagramLikes"
       >
-        [ Like ]
+        [ Brasil ]
       </cv-header-name>
 
       <template slot="header-global">
-        <p style="cursor: pointer" @click="logoff()" class="confidential">
+        <p  v-if="url === 'timeline'" style="cursor: pointer" @click="logoff()" class="confidential">
           Sair
         </p>
       </template>
@@ -19,8 +19,19 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
+
 export default {
   name: 'header-page',
+   computed: {
+     ...mapGetters(['modalEdit']),
+    url: {
+      get: function () {
+        return this.modalEdit
+      },
+    },
+  },
+
   methods: {
     redirect() {
       return window.open(`${window.location.origin}/`, '_self');

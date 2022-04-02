@@ -138,7 +138,8 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
+
 import axios from 'axios';
 
 export default {
@@ -160,6 +161,7 @@ export default {
     ...mapGetters(['modalEdit']),
   },
   methods: {
+    ...mapActions(['setModalEdit', 'setCookieUserJson', 'setModalUser']),
     async checarUsuario() {
       if (this.modalEdit === '') {
         this.$router.push('/');
@@ -188,6 +190,7 @@ export default {
     },
   },
   async mounted() {
+    this.setModalEdit('timeline');
     await this.checarUsuario();
   },
 };
