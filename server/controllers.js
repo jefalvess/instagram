@@ -237,7 +237,6 @@ router.post('/usuarios', async (req, res) => {
     fields: ['usuario'],
   };
   let response = await cloudant.readDocument('proposals', query);
-  cloudant.bulkDocument(response.docs);
   return res.status(200).json({ status: response.docs });
 });
 
