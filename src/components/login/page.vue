@@ -62,6 +62,12 @@
         </cv-checkbox>
       </div>
 
+      <div v-if="erroMensagem" style="padding-top: 3rem" class="bx--row">
+        <p style="font-size: 1.2em; color: red">
+          {{ erroMensagem }}
+        </p>
+      </div>
+
       <div style="margin-top: 1rem; margin-left: -2rem" class="bx--row">
         <div class="bx--col-lg">
           <button
@@ -126,17 +132,18 @@ export default {
     // Criar usuario / Login
     async createUser() {
       this.desativarButton = true;
-      let payload = { usuario: this.usuario.toLowerCase(), senha: this.senha.toLowerCase() };
+      let payload = {
+        usuario: this.usuario.toLowerCase(),
+        senha: this.senha.toLowerCase(),
+      };
       let response = await axios.post('/api/login/user', payload);
-
-      if (response.data.status === false) {
-        this.erroMensagem = response.data.mensagem;
-      }
 
       this.desativarButton = false;
 
       if (response.data.status === true) {
         this.proximaPagina(response.data);
+      } else if (response.data.status === 'error') {
+        this.erroMensagem = response.data.mensagem;
       } else {
         this.$router.push('/info');
       }

@@ -6,7 +6,6 @@
         style="
           border-radius: 6%;
           text-align: center;
-          border: 1px solid black;
           margin-right: 1rem;
           padding-bottom: 1rem;
           margin-bottom: 2rem;
@@ -57,7 +56,7 @@
 
         <!--mensagem  -->
         <div class="bx--row">
-          <div style="cursor: pointer" class="bx--col-lg">
+          <div class="bx--col-lg">
             <p>
               Para ganhar seguidores em nosso site, clique no botao abaixo !
             </p>
@@ -116,8 +115,8 @@
                   </div>
                 </div>
 
-                <div class="bx--row">
-                  <div style="cursor: pointer" class="bx--col-lg">
+                <div style="padding-top: 1rem" class="bx--row">
+                  <div class="bx--col-lg">
                     <button
                       class="bx--btn bx--btn--primary"
                       :disabled="desativarButtonLike"
@@ -126,6 +125,31 @@
                     >
                       Ganhar like
                     </button>
+                  </div>
+                </div>
+
+                <div  style="padding-top: 1rem" class="bx--row">
+                  <div  class="bx--col-lg">
+                    <cv-text-input
+                      label="Qual comentario voce quer receber em sua foto"
+                      v-model="comentario"
+                      :light="true"
+                    >
+                    </cv-text-input>
+                  </div>
+                </div>
+
+                  <div style="padding-top: 1rem" class="bx--row">
+                  <div  class="bx--col-lg">
+                    <button
+                      class="bx--btn bx--btn--primary"
+                      :disabled="desativarButtonComentario"
+                      @click="ganharComentario(item.id)"
+                      type="button"
+                    >
+                      Ganhar comentario
+                    </button>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -153,8 +177,9 @@ export default {
       timeline: [],
       rota: '/uploads/',
       prefix: '-a.png',
-      desativarButtonLike: false
-
+      desativarButtonLike: false,
+      comentario: '',
+      desativarButtonComentario: false,
     };
   },
   computed: {
@@ -187,6 +212,14 @@ export default {
       let response = await axios.post('/api/ganhar/likes', payload);
       this.desativarButtonLike = false;
       console.log(response.data);
+    },
+    async ganharComentario(id) {
+      this.desativarButtonComentario = true;
+      let cookie = this.$cookies.get('token');
+      let payload = { token: cookie, mediaId: id, comentario: this.comentario };
+      let response = await axios.post('/api/ganhar/comentario', payload);
+      this.desativarButtonComentario = false;
+      this.comentario = ' ';
     },
   },
   async mounted() {

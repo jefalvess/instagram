@@ -3,23 +3,31 @@
     style="margin-left: 1rem; margin-bottom: 7rem; margin-top: 7rem"
     class="bx--grid"
   >
-    <strong>  Termos de Uso Leia com atenção este termo de uso. Se
-    você não concordar com qualquer condição do documento, por favor, não use o
-    serviço do InstagramLikesBrasil. Ao utilizar ou se cadastrar você reconhece
-    a integridade deste termo de uso e concorda que se vinculou integralmente às
-    suas condições de forma livre e espontânea. Privacidade O
-    InstagramLikesBrasil não armazena nenhuma imagem ou foto de usuário. O
-    InstagramLikesBrasil armazena usuário, senha, id, cookie entre outros dados
-    do utilizador necessários para o funcionamento do sistema.  </strong> <br /><br />
+    <div style="text-align: center" class="bx--row">
+      <div style="text-align: center; font-size: 1.2rem" class="bx--col">
+        <strong>
+          Termos de Uso Leia com atenção este termo de uso. Se você não
+          concordar com qualquer condição do documento, por favor, não use o
+          serviço do InstagramLikesBrasil. Ao utilizar ou se cadastrar você
+          reconhece a integridade deste termo de uso e concorda que se vinculou
+          integralmente às suas condições de forma livre e espontânea.
+          Privacidade O InstagramLikesBrasil não armazena nenhuma imagem ou foto
+          de usuário. O InstagramLikesBrasil armazena usuário, senha, id, cookie
+          entre outros dados do utilizador necessários para o funcionamento do
+          sistema.
+        </strong>
+        <br /><br />
+      </div>
+    </div>
+
     <strong> 1 </strong> O InstagramLikesBrasil usa os dados de login/senha para
     se conectar ao Instagram, de maneira automatica, tal conexão pode ser
     distante de onde se conecta.<br /><br />
     <strong> 2 </strong> Os administradores do site não possuem acesso à sua
     conta, apenas o sistema InstagramLikesBrasil possui acesso aos cookies da
-    sessão.<br /><br />
-    O Sistema InstagramLikesBrasil não tem qualquer funcionalidade programada
-    que permita excluir a sua conta do Instagram ou efetuar qualquer alteração
-    na mesma.<br /><br />
+    sessão. O Sistema InstagramLikesBrasil não tem qualquer funcionalidade
+    programada que permita excluir a sua conta do Instagram ou efetuar qualquer
+    alteração na mesma.<br /><br />
     <strong> 3 </strong> O Sistema InstagramLikesBrasil está programado apenas
     para: efetuar login, curtir, seguir e visualizar stories.<br /><br />
     <strong> 4 </strong> O usuário pode optar por encerrar sua conta, quando
@@ -43,8 +51,7 @@
     erro ou problema que possa ser causado pelo uso do software.<br /><br />
     <strong> 12 </strong> Ninguém tem a permissão de armazenar/copiar qualquer
     imagem ou texto do InstagramLikesBrasil.<br /><br />
-    <strong> 13 </strong> Prezamos pelo bom uso e comportamento em nosso
-    site.<br /><br />
+    <strong> 13 </strong> Prezamos pelo bom uso e comportamento em nosso site.
     Dessa forma fica proibido o uso do site para: - Finalidades ilícitas,
     promoção de atividades ilegais, apologia ao crime, e quaisquer outros fins
     semelhantes.<br /><br />
@@ -125,6 +132,19 @@
     <strong> 40 </strong>Ao fazer o cadastro no site você concorda com todos os
     termos de uso e isenta o InstagramLikesBrasil de qualquer responsabilidade e
     erros que podem aparecer.<br /><br />
+
+      <div style="text-align: center; padding-top: 3rem" class="bx--row">
+      <div style="text-align: center; font-size: 1.2rem" class="bx--col">
+        <button
+          class="bx--btn bx--btn--primary"
+          :disabled="desativarButton"
+          @click="login()"
+          type="button"
+        >
+          * Login instagramLikes *
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -144,9 +164,12 @@ export default {
   },
   methods: {
     ...mapActions(['setModalEdit', 'setCookieUserJson', 'setModalUser']),
+    async login() {
+      this.$router.push('/');
+    },
   },
   mounted() {
-      this.setModalEdit('termos');
+    this.setModalEdit('termos');
   },
 };
 </script>

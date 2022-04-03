@@ -31,8 +31,28 @@ async function checarLogin(username, password) {
     let responseInstagram = { authenticated: true, userId: loggedInUser.pk };
 
     return { responseInstagram, info, timelineArray };
-  } catch {
-    let responseInstagram = { authenticated: false };
+  } catch (e) {
+
+    let mensagemErro = '';
+    let senhaErrada = false;
+
+    if (e.message.match(/check your username/)) {
+      senhaErrada = true;
+      mensagemErro = 'Nome de usuario ou senha estao incorretos por favor verifique e tente novamente'
+    }
+
+
+    if (e.message.match(/password you entered/)) {
+      senhaErrada = true
+      mensagemErro = 'Nome de usuario ou senha estao incorretos por favor verifique e tente novamente'
+    }
+
+    if (e.message.match(/challenge_required/)) {
+      mensagemErro = 'Conta bloqueada veja como desbloquear';
+    }
+
+    let responseInstagram = { authenticated: false, senhaErrada: senhaErrada, mensagem: mensagemErro };
+
     return { responseInstagram };
   }
 };
@@ -73,8 +93,29 @@ async function ganharLikes(username, password, mediaId) {
   }
 };
 
+async function ganharComentario(username, password, mediaId, text) {
+  try {
+    let { IgApiClient } = require('instagram-private-api');
+    let ig = new IgApiClient();
+    await ig.state.generateDevice(username);
+    await ig.simulate.preLoginFlow();
+    await ig.account.login(username, password);
+
+    await ig.media.comment({
+      module_name: 'profile',
+      mediaId: mediaId,
+      text: text,
+    });
+
+    return true;
+  } catch (e) {
+    return e;
+  }
+};
+
 module.exports = {
   checarLogin,
   ganharSeguidores,
   ganharLikes,
+  ganharComentario,
 };

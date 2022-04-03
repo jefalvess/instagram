@@ -14,7 +14,7 @@ module.exports = {
           //If token is successfully verified, we can send the autorized data
           resolve({
             message: 'Successful log in',
-            authorizedData
+            authorizedData,
           });
         }
       });

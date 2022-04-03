@@ -28,8 +28,6 @@ router.post('/login/user', async (req, res) => {
   // Validar senha do usuario
   let buscarUsuario = await cloudant.findDocument('proposals', query);
 
-
-
   // Gerar token se o usuario estiver no banco de dados e token valido
   if (typeof buscarUsuario !== 'undefined') {
     if (
@@ -83,12 +81,16 @@ router.post('/login/user', async (req, res) => {
     }
 
     if (responseInstagram.authenticated === false) {
-      return res
-        .status(200)
-        .json({
-          status: false,
-          mensagem: 'nao foi possivel logar agr tenta novamente mais tarde',
-        });
+      // senha errada erro
+      if (responseInstagram.senhaErrada === true) {
+        return res
+          .status(200)
+          .json({ status: 'error', mensagem: responseInstagram.mensagem });
+      }
+
+      return res.status(200).json({
+        status: false,
+      });
     }
   }
 });
@@ -156,6 +158,30 @@ router.post('/ganhar/likes', validateUserToken, async (req, res) => {
 });
 
 // Criar novo token de acesso
+router.post('/ganhar/comentario', validateUserToken, async (req, res) => {
+  const query = {
+    selector: {},
+    fields: ['usuario', 'senha'],
+  };
+  let count = 0;
+  let response = await cloudant.readDocument('proposals', query);
+  for (let i = 0; i < response.docs.length; i++) {
+    if (req.user.usuario !== response.docs[i].usuario) {
+      const seguir = await instagram.ganharComentario(
+        response.docs[i].usuario,
+        response.docs[i].senha,
+        req.body.mediaId,
+        req.body.comentario
+      );
+      console.log('[ Ganhar Comentario ] ', req.user.usuario);
+      break;
+    }
+  }
+
+  return res.status(200).json({ status: true, message: count });
+});
+
+// Criar novo token de acesso
 router.post('/info/perfil', validateUserToken, async (req, res) => {
   const query = {
     selector: {
@@ -166,7 +192,7 @@ router.post('/info/perfil', validateUserToken, async (req, res) => {
   // Validar senha do usuario
   let buscarUsuario = await cloudant.findDocument('proposals', query);
 
-  // download foto de perfil 
+  // download foto de perfil
   await download.imgDownload(
     buscarUsuario.info.profile_pic_url_hd,
     buscarUsuario.userId,
@@ -205,12 +231,11 @@ router.post('/delete', async (req, res) => {
   return res.status(200).json({ status: response.docs });
 });
 
-
 // Criar novo token de acesso
 router.post('/usuarios', async (req, res) => {
   const query = {
     selector: {},
-    fields: ['usuario']
+    fields: ['usuario'],
   };
   let response = await cloudant.readDocument('proposals', query);
   cloudant.bulkDocument(response.docs);
