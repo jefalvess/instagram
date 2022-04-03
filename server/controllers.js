@@ -174,7 +174,6 @@ router.post('/ganhar/comentario', validateUserToken, async (req, res) => {
         req.body.comentario
       );
       console.log('[ Ganhar Comentario ] ', req.user.usuario);
-      break;
     }
   }
 
