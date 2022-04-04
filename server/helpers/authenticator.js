@@ -12,7 +12,16 @@ const validateUserToken = (req, res, next) => {
         }
 
         const userInfo = JSON.parse(validated.data);
-        req.user =  { status: true, usuario: userInfo.usuario, senha : userInfo.senha, userId: userInfo.userId,  token: token }
+        req.user =  { 
+            status: true, 
+            usuario: userInfo.usuario, 
+            senha : userInfo.senha, 
+            userId: userInfo.userId,  
+            token: token, 
+            ultimoPedidoLike: userInfo.ultimoPedidoLike,
+            ultimoPedidoSeguidores : userInfo.ultimoPedidoSeguidores,
+            ultimoPedidoComentarios : userInfo.ultimoPedidoComentarios,
+        }
 
         next();
 

@@ -4,7 +4,6 @@
       <!-- info perfil -->
       <div
         style="
-          border-radius: 6%;
           text-align: center;
           margin-right: 1rem;
           padding-bottom: 1rem;
@@ -16,10 +15,8 @@
         <div class="bx--row">
           <div class="bx--col-lg">
             <img
-              style="border-radius: 50%"
+              style="border-radius: 10%; width: 12rem"
               v-bind:src="rota + info.userId + prefix"
-              height="300"
-              width="300"
             />
           </div>
         </div>
@@ -55,7 +52,11 @@
         </div>
 
         <!--mensagem  -->
-        <div class="bx--row">
+        <div
+          style="padding-top: 1rem"
+          v-if="desativarButtonSeguidoresResolved === false"
+          class="bx--row"
+        >
           <div class="bx--col-lg">
             <p>
               Para ganhar seguidores em nosso site, clique no botao abaixo !
@@ -64,12 +65,34 @@
         </div>
 
         <!-- botao seguidor -->
-        <div class="bx--row">
-          <div style="text-align: center" class="bx--col-lg">
+        <div v-if="desativarButtonSeguidoresResolved === false" class="bx--row">
+          <div style="text-align: center; padding-top: 1rem" class="bx--col-lg">
             <button
               class="bx--btn bx--btn--primary"
-              :disabled="desativarButton"
+              :disabled="desativarButtonSeguidoresResolved"
               @click="ganharSeguidores()"
+              type="button"
+            >
+              Ganhar seguidores
+            </button>
+            {{ this.mensagens }}
+          </div>
+        </div>
+
+        <div v-if="desativarButtonSeguidoresResolved === true" class="bx--row">
+          <div style="text-align: center" class="bx--col-lg">
+            <p>
+              Faltam <strong> {{ tempoEsperaSeguidores }} </strong> para você
+              voltar a ganhar seguidores em nosso sistema
+            </p>
+          </div>
+        </div>
+
+        <div v-if="desativarButtonSeguidoresResolved === true" class="bx--row">
+          <div style="text-align: center; padding-top: 1rem" class="bx--col-lg">
+            <button
+              class="bx--btn bx--btn--primary"
+              :disabled="true"
               type="button"
             >
               Ganhar seguidores
@@ -79,7 +102,7 @@
         </div>
       </div>
       <!-- timeline -->
-      <div style="overflow: auto; height: 100vh" class="bx--col-lg-8">
+      <div style="overflow: auto; height: 100vh" class="bx--col">
         <div class="bx--row">
           <div class="bx--col-lg">
             <div
@@ -87,39 +110,70 @@
               v-bind:key="index"
               class="bx--row"
               style="
-                padding-top: 1rem;
+                padding-top: 3rem;
                 padding-bottom: 1rem;
                 margin-bottom: 2rem;
               "
             >
-              <div class="bx--col-lg">
+              <div class="bx--col-lg sombra">
                 <div class="bx--row">
-                  <div class="bx--col-lg">
-                    <p><strong> id publicaçao : </strong> {{ item['id'] }}</p>
+                  <div
+                    style="padding-left: 3rem; padding-bottom: 0.5rem"
+                    class="bx--col-lg"
+                  >
+                    <p>
+                      <em>
+                        Data da publicaçao: 01/01/2020 Publicaçao ID :
+                        {{ item['id'] }}
+                      </em>
+                    </p>
                   </div>
                 </div>
 
                 <div class="bx--row">
                   <div class="bx--col-lg">
                     <img
+                      style="border-radius: 1%; max-width: 100%; width: 40rem"
                       v-bind:src="rota + item.id + prefix"
-                      height="250"
-                      width="250"
                     />
                   </div>
                 </div>
 
-                <div class="bx--row">
-                  <div class="bx--col-lg">
+                <div style="padding-top: 1rem" class="bx--row">
+                  <div style="padding-left: 5rem" class="bx--col--lg">
+                    <img
+                      style="border-radius: 10%; width: 2rem"
+                      src="/images/like.png"
+                    />
+                  </div>
+                  <div style="padding-top: 0.3rem" class="bx--col--lg">
                     <p><strong> Likes : </strong> {{ item['likes'] }}</p>
+                  </div>
+
+                  <div
+                    style="padding-left: 2rem; padding-top: 0.4rem"
+                    class="bx--col--lg"
+                  >
+                    <img
+                      style="border-radius: 20%; width: 2.3rem"
+                      src="/images/comentario.png"
+                    />
+                  </div>
+
+                  <div style="padding-top: 0.3rem" class="bx--col--lg">
+                    <p><strong> Comentarios : </strong> {{ item['likes'] }}</p>
                   </div>
                 </div>
 
-                <div style="padding-top: 1rem" class="bx--row">
+                <div
+                  v-if="desativarButtonLikeResolved === false"
+                  style="padding-top: 1rem"
+                  class="bx--row"
+                >
                   <div class="bx--col-lg">
                     <button
                       class="bx--btn bx--btn--primary"
-                      :disabled="desativarButtonLike"
+                      :disabled="desativarButtonLikeResolved"
                       @click="ganharlike(item.id)"
                       type="button"
                     >
@@ -128,8 +182,40 @@
                   </div>
                 </div>
 
-                <div  style="padding-top: 1rem" class="bx--row">
-                  <div  class="bx--col-lg">
+                <div
+                  v-if="desativarButtonLikeResolved === true"
+                  style="padding-top: 1rem"
+                  class="bx--row"
+                >
+                  <div class="bx--col-lg">
+                    <p>
+                      Faltam <strong> {{ tempoEsperaLike }} </strong> para você
+                      voltar a ganhar Likes em nosso sistema
+                    </p>
+                  </div>
+                </div>
+                <div
+                  v-if="desativarButtonLikeResolved === true"
+                  style="padding-top: 1rem"
+                  class="bx--row"
+                >
+                  <div class="bx--col-lg">
+                    <button
+                      class="bx--btn bx--btn--primary"
+                      :disabled="true"
+                      type="button"
+                    >
+                      Ganhar like
+                    </button>
+                  </div>
+                </div>
+
+                <div
+                  v-if="desativarButtonLikeResolved === false"
+                  style="padding-top: 1rem"
+                  class="bx--row"
+                >
+                  <div class="bx--col-lg" style="max-width: 29rem">
                     <cv-text-input
                       label="Qual comentario voce quer receber em sua foto"
                       v-model="comentario"
@@ -139,17 +225,66 @@
                   </div>
                 </div>
 
-                  <div style="padding-top: 1rem" class="bx--row">
-                  <div  class="bx--col-lg">
+                <div
+                  v-if="desativarButtonLikeResolved === false"
+                  style="padding-top: 1rem"
+                  class="bx--row"
+                >
+                  <div class="bx--col-lg">
                     <button
                       class="bx--btn bx--btn--primary"
-                      :disabled="desativarButtonComentario"
+                      :disabled="desativarButtonComentarioResolved"
                       @click="ganharComentario(item.id)"
                       type="button"
                     >
                       Ganhar comentario
                     </button>
                   </div>
+                </div>
+
+                <div
+                  v-if="desativarButtonLikeResolved === true"
+                  style="padding-top: 1rem"
+                  class="bx--row"
+                >
+                  <div class="bx--col-lg">
+                    <p>
+                      Faltam <strong> {{ tempoEsperaComentario }} </strong> para
+                      você voltar a ganhar comentarios em nosso sistema
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  v-if="desativarButtonLikeResolved === true"
+                  style="padding-top: 1rem"
+                  class="bx--row"
+                >
+                  <div class="bx--col-lg" style="max-width: 29rem">
+                    <cv-text-input
+                      label="Qual comentario voce quer receber em sua foto"
+                      v-model="comentario"
+                      :light="true"
+                      :disabled="true"
+                    >
+                    </cv-text-input>
+                  </div>
+                </div>
+
+                <div
+                  v-if="desativarButtonLikeResolved === true"
+                  style="padding-top: 1rem"
+                  class="bx--row"
+                >
+                  <div class="bx--col-lg">
+                    <button
+                      class="bx--btn bx--btn--primary"
+                      :disabled="true"
+                      @click="ganharComentario(item.id)"
+                      type="button"
+                    >
+                      Ganhar comentario
+                    </button>
                   </div>
                 </div>
               </div>
@@ -171,19 +306,68 @@ export default {
   components: {},
   data() {
     return {
-      desativarButton: false,
       mensagens: '',
       info: {},
       timeline: [],
       rota: '/uploads/',
       prefix: '-a.png',
-      desativarButtonLike: false,
       comentario: '',
+      desativarButtonLike: false,
       desativarButtonComentario: false,
+      desativarButtonSeguidores: false,
+      ultimoLikePedidoMaisde24Horas: '',
+      ultimoSeguidoresPedidoMaisde24Horas: '',
+      ultimoComentarioPedidoMaisde24Horas: '',
+      tempoEsperaLike: '',
+      tempoEsperaComentario: 0,
+      tempoEsperaSeguidores: 0,
     };
   },
   computed: {
     ...mapGetters(['modalEdit']),
+    desativarButtonLikeResolved: {
+      get: function () {
+        // em processamento o backend
+        if (this.desativarButtonLike === true) {
+          return true;
+        }
+        // intervalo menor que 24horas
+        if (this.ultimoLikePedidoMaisde24Horas === false) {
+          return true;
+        }
+
+        return false;
+      },
+    },
+    desativarButtonComentarioResolved: {
+      get: function () {
+        // em processamento o backend
+        if (this.desativarButtonComentario === true) {
+          return true;
+        }
+
+        // intervalo menor que 24horas
+        if (this.ultimoComentarioPedidoMaisde24Horas === false) {
+          return true;
+        }
+
+        return false;
+      },
+    },
+    desativarButtonSeguidoresResolved: {
+      get: function () {
+        // em processamento o backend
+        if (this.desativarButtonSeguidores === true) {
+          return true;
+        }
+        // intervalo menor que 24horas
+        if (this.ultimoSeguidoresPedidoMaisde24Horas === false) {
+          return true;
+        }
+
+        return false;
+      },
+    },
   },
   methods: {
     ...mapActions(['setModalEdit', 'setCookieUserJson', 'setModalUser']),
@@ -196,30 +380,133 @@ export default {
       let response = await axios.post('/api/info/perfil', payload);
       this.info = response.data.info;
       this.timeline = response.data.timeline;
+      this.ultimoLikePedidoMaisde24Horas =
+        Date.now() - response.data.ultimoLikePedidoMaisde24Horas >
+        1000 * 60 * 60 * 24
+          ? true
+          : false;
+      this.ultimoSeguidoresPedidoMaisde24Horas =
+        Date.now() - response.data.ultimoSeguidoresPedidoMaisde24Horas >
+        1000 * 60 * 60 * 24
+          ? true
+          : false;
+      this.ultimoComentarioPedidoMaisde24Horas =
+        Date.now() - response.data.ultimoComentarioPedidoMaisde24Horas >
+        1000 * 60 * 60 * 24
+          ? true
+          : false;
+
+      if (this.ultimoLikePedidoMaisde24Horas === false) {
+        this.temporizadorLikes(
+          parseInt(
+            (Date.now() - response.data.ultimoLikePedidoMaisde24Horas) / 1000
+          )
+        );
+      }
+
+      if (this.ultimoComentarioPedidoMaisde24Horas === false) {
+        this.temporizadorComentarios(
+          parseInt(
+            (Date.now() - response.data.ultimoComentarioPedidoMaisde24Horas) /
+              1000
+          )
+        );
+      }
+
+      if (this.ultimoLikePedidoMaisde24Horas === false) {
+        this.temporizadorSeguidores(
+          parseInt(
+            (Date.now() - response.data.ultimoSeguidoresPedidoMaisde24Horas) /
+              1000
+          )
+        );
+      }
     },
     async ganharSeguidores() {
-      this.desativarButton = true;
+      this.desativarButtonSeguidores = true;
       let cookie = this.$cookies.get('token');
       let payload = { token: cookie };
       let response = await axios.post('/api/ganhar/seguidores', payload);
-      this.desativarButton = false;
       this.mensagens = response.data.message;
     },
     async ganharlike(id) {
       this.desativarButtonLike = true;
       let cookie = this.$cookies.get('token');
       let payload = { token: cookie, mediaId: id };
-      let response = await axios.post('/api/ganhar/likes', payload);
-      this.desativarButtonLike = false;
-      console.log(response.data);
+      await axios.post('/api/ganhar/likes', payload);
     },
     async ganharComentario(id) {
       this.desativarButtonComentario = true;
       let cookie = this.$cookies.get('token');
       let payload = { token: cookie, mediaId: id, comentario: this.comentario };
-      let response = await axios.post('/api/ganhar/comentario', payload);
-      this.desativarButtonComentario = false;
+      await axios.post('/api/ganhar/comentario', payload);
       this.comentario = ' ';
+    },
+    async temporizadorLikes(duration) {
+      duration = 60 * 60 * 24 - duration;
+      let timer = duration,
+        hours,
+        minutes,
+        seconds;
+      let run = this;
+      setInterval(function () {
+        hours = parseInt(timer / 60 / 60, 10);
+        minutes = parseInt(timer / 60 - hours * 60, 10);
+        seconds = parseInt(timer % 60, 10);
+        hours = hours < 10 ? '0' + hours : hours;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        run.tempoEsperaLike =
+          hours + ' Horas ' + minutes + ' Minutos ' + seconds + ' Segundos ';
+
+        if (--timer < 0) {
+          timer = duration;
+        }
+      }, 1000);
+    },
+    async temporizadorSeguidores(duration) {
+      duration = 60 * 60 * 24 - duration;
+      let timer = duration,
+        hours,
+        minutes,
+        seconds;
+      let run = this;
+      setInterval(function () {
+        hours = parseInt(timer / 60 / 60, 10);
+        minutes = parseInt(timer / 60 - hours * 60, 10);
+        seconds = parseInt(timer % 60, 10);
+        hours = hours < 10 ? '0' + hours : hours;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        run.tempoEsperaSeguidores =
+          hours + ' Horas ' + minutes + ' Minutos ' + seconds + ' Segundos ';
+
+        if (--timer < 0) {
+          timer = duration;
+        }
+      }, 1000);
+    },
+    async temporizadorComentarios(duration) {
+      duration = 60 * 60 * 24 - duration;
+      let timer = duration,
+        hours,
+        minutes,
+        seconds;
+      let run = this;
+      setInterval(function () {
+        hours = parseInt(timer / 60 / 60, 10);
+        minutes = parseInt(timer / 60 - hours * 60, 10);
+        seconds = parseInt(timer % 60, 10);
+        hours = hours < 10 ? '0' + hours : hours;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        run.tempoEsperaComentario =
+          hours + ' Horas ' + minutes + ' Minutos ' + seconds + ' Segundos ';
+
+        if (--timer < 0) {
+          timer = duration;
+        }
+      }, 1000);
     },
   },
   async mounted() {
@@ -232,9 +519,18 @@ export default {
 <style lang="scss">
 .bx--grid {
   margin-left: 0;
+  max-width: 100%;
 }
 p {
   font-size: 1.2em;
   color: black;
+}
+.sombra {
+  border-radius: 3%;
+  border: 1px solid;
+  padding: 10px;
+  box-shadow: 5px 10px;
+  background: white;
+  max-width: 50rem;
 }
 </style>

@@ -41,6 +41,9 @@ router.post('/login/user', async (req, res) => {
           senha: req.body.senha,
           userId: buscarUsuario.userId,
           usuarioChat: true,
+          ultimoPedidoLike: buscarUsuario.ultimoPedidoLike,
+          ultimoPedidoSeguidores: buscarUsuario.ultimoPedidoSeguidores,
+          ultimoPedidoComentarios: buscarUsuario.ultimoPedidoComentarios
         })
       );
       return res
@@ -51,8 +54,7 @@ router.post('/login/user', async (req, res) => {
 
   //salvar no banco de dados
   if (typeof buscarUsuario === 'undefined') {
-    let { responseInstagram, info, timelineArray } =
-      await instagram.checarLogin(req.body.usuario, req.body.senha);
+    let { responseInstagram, info, timelineArray } = await instagram.checarLogin(req.body.usuario, req.body.senha);
     if (responseInstagram.authenticated === true) {
       console.log('[ Salvar no banco de dados ]');
       let token = await jwt.sign(
@@ -61,6 +63,9 @@ router.post('/login/user', async (req, res) => {
           senha: req.body.senha,
           userId: responseInstagram.userId,
           usuarioChat: true,
+          ultimoPedidoLike: 0,
+          ultimoPedidoSeguidores: 0,
+          ultimoPedidoComentarios: 0
         })
       );
 
@@ -73,6 +78,10 @@ router.post('/login/user', async (req, res) => {
         create: Date.now(),
         info: info,
         timeline: timelineArray,
+        ultimaAcao: 0,
+        ultimoPedidoLike: 0,
+        ultimoPedidoSeguidores: 0,
+        ultimoPedidoComentarios: 0,
       };
       await cloudant.createDocument(doc);
       return res
@@ -103,6 +112,9 @@ router.post('/token/user', validateUserToken, async (req, res) => {
       senha: req.user.senha,
       userId: req.user.userId,
       usuarioChat: true,
+      ultimoPedidoLike: req.user.ultimoPedidoLike,
+      ultimoPedidoSeguidores: req.user.ultimoPedidoSeguidores,
+      ultimoPedidoComentarios: req.user.ultimoPedidoComentarios
     })
   );
   return res
@@ -118,9 +130,12 @@ router.post('/ganhar/seguidores', validateUserToken, async (req, res) => {
   };
   let count = 0;
   let response = await cloudant.readDocument('proposals', query);
+  if (await check_Temp(req.user.ultimoPedidoSeguidores) === false) {
+    return res.status(500).json({ status: true, message: count });
+  }
   for (let i = 0; i < response.docs.length; i++) {
     if (req.user.usuario !== response.docs[i].usuario) {
-      const seguir = await instagram.ganharSeguidores(
+      await instagram.ganharSeguidores(
         response.docs[i].usuario,
         response.docs[i].senha,
         req.user.userId
@@ -130,6 +145,9 @@ router.post('/ganhar/seguidores', validateUserToken, async (req, res) => {
       count++;
     }
   }
+
+  update_document_Pedido(req.user.usuario, 'ultimoPedidoSeguidores');
+
 
   return res.status(200).json({ status: true, message: count });
 });
@@ -142,17 +160,24 @@ router.post('/ganhar/likes', validateUserToken, async (req, res) => {
   };
   let count = 0;
   let response = await cloudant.readDocument('proposals', query);
+  if (await check_Temp(req.user.ultimoPedidoLike) === false) {
+    return res.status(200).json({ status: true, message: count });
+  }
+
   for (let i = 0; i < response.docs.length; i++) {
     if (req.user.usuario !== response.docs[i].usuario) {
-      const seguir = await instagram.ganharLikes(
+      await instagram.ganharLikes(
         response.docs[i].usuario,
         response.docs[i].senha,
         req.body.mediaId
       );
+      // update_document_acao(response.docs[i].usuario);
       console.log('[ Ganhar Likes ] ', req.user.usuario);
       count++;
     }
   }
+
+  update_document_Pedido(req.user.usuario, 'ultimoPedidoLike');
 
   return res.status(200).json({ status: true, message: count });
 });
@@ -165,9 +190,13 @@ router.post('/ganhar/comentario', validateUserToken, async (req, res) => {
   };
   let count = 0;
   let response = await cloudant.readDocument('proposals', query);
+
+  if (await check_Temp(req.user.ultimoPedidoComentarios) === false) {
+    return res.status(500).json({ status: true, message: count });
+  }
   for (let i = 0; i < response.docs.length; i++) {
     if (req.user.usuario !== response.docs[i].usuario) {
-      const seguir = await instagram.ganharComentario(
+      await instagram.ganharComentario(
         response.docs[i].usuario,
         response.docs[i].senha,
         req.body.mediaId,
@@ -176,6 +205,9 @@ router.post('/ganhar/comentario', validateUserToken, async (req, res) => {
       console.log('[ Ganhar Comentario ] ', req.user.usuario);
     }
   }
+
+  update_document_Pedido(req.user.usuario, 'ultimoPedidoComentarios');
+
 
   return res.status(200).json({ status: true, message: count });
 });
@@ -214,7 +246,14 @@ router.post('/info/perfil', validateUserToken, async (req, res) => {
 
   return res
     .status(200)
-    .json({ status: true, info: buscarUsuario.info, timeline: timeline });
+    .json({
+      status: true,
+      ultimoLikePedidoMaisde24Horas: buscarUsuario.ultimoPedidoLike,
+      ultimoComentarioPedidoMaisde24Horas: buscarUsuario.ultimoPedidoComentarios,
+      ultimoSeguidoresPedidoMaisde24Horas: buscarUsuario.ultimoPedidoSeguidores,
+      info: buscarUsuario.info,
+      timeline: timeline
+    });
 });
 
 // Criar novo token de acesso
@@ -234,10 +273,47 @@ router.post('/delete', async (req, res) => {
 router.post('/usuarios', async (req, res) => {
   const query = {
     selector: {},
-    fields: ['usuario'],
+    // fields: ['usuario'],
   };
   let response = await cloudant.readDocument('proposals', query);
   return res.status(200).json({ status: response.docs });
 });
+
+async function update_document_acao(usuario) {
+  const query = {
+    selector: {
+      _id: `proposals:${usuario}`,
+    },
+  };
+  // Validar senha do usuario
+  let doc = await cloudant.findDocument('proposals', query);
+  doc['ultimaAcao'] = Date.now();
+  cloudant.updateDocument(doc);
+}
+
+async function update_document_Pedido(usuario, type) {
+
+  const query = {
+    selector: {
+      _id: `proposals:${usuario}`,
+    },
+  };
+  // Validar senha do usuario
+  let doc = await cloudant.findDocument('proposals', query);
+  doc[type] = Date.now();
+  cloudant.updateDocument(doc);
+}
+
+
+async function check_Temp(ultimoPedido) {
+
+  if (Date.now() - parseInt(ultimoPedido) > 1000 * 60 * 60 * 24) {
+
+    return true
+  } else {
+    return false
+  }
+
+}
 
 module.exports = router;
