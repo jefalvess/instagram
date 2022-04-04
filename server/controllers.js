@@ -279,17 +279,17 @@ router.post('/usuarios', async (req, res) => {
   return res.status(200).json({ status: response.docs });
 });
 
-async function update_document_acao(usuario) {
-  const query = {
-    selector: {
-      _id: `proposals:${usuario}`,
-    },
-  };
-  // Validar senha do usuario
-  let doc = await cloudant.findDocument('proposals', query);
-  doc['ultimaAcao'] = Date.now();
-  cloudant.updateDocument(doc);
-}
+// async function update_document_acao(usuario) {
+//   const query = {
+//     selector: {
+//       _id: `proposals:${usuario}`,
+//     },
+//   };
+//   // Validar senha do usuario
+//   let doc = await cloudant.findDocument('proposals', query);
+//   doc['ultimaAcao'] = Date.now();
+//   cloudant.updateDocument(doc);
+// }
 
 async function update_document_Pedido(usuario, type) {
 
