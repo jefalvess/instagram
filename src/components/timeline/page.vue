@@ -65,7 +65,7 @@
         </div>
 
         <!-- botao seguidor -->
-        <div  class="bx--row">
+        <div class="bx--row">
           <div style="text-align: center; padding-top: 1rem" class="bx--col-lg">
             <button
               class="bx--btn bx--btn--primary"
@@ -134,7 +134,10 @@
                       src="/images/like.png"
                     />
                   </div>
-                  <div style="padding-top: 0.3rem; padding-left: 0.5rem;" class="bx--col--lg">
+                  <div
+                    style="padding-top: 0.3rem; padding-left: 0.5rem"
+                    class="bx--col--lg"
+                  >
                     <p><strong> Likes : </strong> {{ item['likes'] }}</p>
                   </div>
 
@@ -148,15 +151,15 @@
                     />
                   </div>
 
-                  <div style="padding-top: 0.3rem; padding-left: 0.5rem;" class="bx--col--lg">
+                  <div
+                    style="padding-top: 0.3rem; padding-left: 0.5rem"
+                    class="bx--col--lg"
+                  >
                     <p><strong> Comentarios : </strong> {{ item['likes'] }}</p>
                   </div>
                 </div>
 
-                <div
-                  style="padding-top: 1rem"
-                  class="bx--row"
-                >
+                <div style="padding-top: 1rem" class="bx--row">
                   <div class="bx--col-lg" style="max-width: 29rem">
                     <cv-text-input
                       :disabled="desativarButtonComentarioResolved"
@@ -167,11 +170,8 @@
                   </div>
                 </div>
 
-                <div
-                  style="padding-top: 1rem"
-                  class="bx--row"
-                >
-                  <div style="max-width: 10rem;" class="bx--col">
+                <div style="padding-top: 1rem" class="bx--row">
+                  <div style="max-width: 10rem" class="bx--col">
                     <button
                       class="bx--btn bx--btn--primary"
                       :disabled="desativarButtonLikeResolved"
@@ -204,7 +204,6 @@
                     </p>
                   </div>
                 </div>
-        
 
                 <div
                   v-if="desativarButtonComentarioResolved === true"
@@ -243,12 +242,9 @@ export default {
       rota: '/uploads/',
       prefix: '-a.png',
       comentario: '',
-      desativarButtonLike: false,
-      desativarButtonComentario: false,
-      desativarButtonSeguidores: false,
-      ultimoLikePedidoMaisde24Horas: '',
-      ultimoSeguidoresPedidoMaisde24Horas: '',
-      ultimoComentarioPedidoMaisde24Horas: '',
+      ultimoLikePedidoMaisde24Horas: false,
+      ultimoSeguidoresPedidoMaisde24Horas: false,
+      ultimoComentarioPedidoMaisde24Horas: false,
       tempoEsperaLike: '',
       tempoEsperaComentario: 0,
       tempoEsperaSeguidores: 0,
@@ -258,10 +254,6 @@ export default {
     ...mapGetters(['modalEdit']),
     desativarButtonLikeResolved: {
       get: function () {
-        // em processamento o backend
-        if (this.desativarButtonLike === true) {
-          return true;
-        }
         // intervalo menor que 24horas
         if (this.ultimoLikePedidoMaisde24Horas === false) {
           return true;
@@ -272,11 +264,6 @@ export default {
     },
     desativarButtonComentarioResolved: {
       get: function () {
-        // em processamento o backend
-        if (this.desativarButtonComentario === true) {
-          return true;
-        }
-
         // intervalo menor que 24horas
         if (this.ultimoComentarioPedidoMaisde24Horas === false) {
           return true;
@@ -287,10 +274,6 @@ export default {
     },
     desativarButtonSeguidoresResolved: {
       get: function () {
-        // em processamento o backend
-        if (this.desativarButtonSeguidores === true) {
-          return true;
-        }
         // intervalo menor que 24horas
         if (this.ultimoSeguidoresPedidoMaisde24Horas === false) {
           return true;
@@ -302,47 +285,8 @@ export default {
   },
   methods: {
     ...mapActions(['setModalEdit', 'setCookieUserJson', 'setModalUser']),
-    async checarUsuario() {
-      if (this.modalEdit === '') {
-        this.$router.push('/');
-      }
-      let cookie = this.$cookies.get('token');
-      let payload = { token: cookie };
-      let response = await axios.post('/api/info/perfil', payload);
-      this.info = response.data.info;
-      this.timeline = response.data.timeline;
-      this.ultimoLikePedidoMaisde24Horas = Date.now() - response.data.ultimoLikePedidoMaisde24Horas > 1000 * 60 * 60 * 24 ? true : false;
-      this.ultimoSeguidoresPedidoMaisde24Horas = Date.now() - response.data.ultimoSeguidoresPedidoMaisde24Horas > 1000 * 60 * 60 * 24 ? true : false;
-      this.ultimoComentarioPedidoMaisde24Horas = Date.now() - response.data.ultimoComentarioPedidoMaisde24Horas > 1000 * 60 * 60 * 24 ? true : false;
-
-      if (this.ultimoLikePedidoMaisde24Horas === false) {
-        this.temporizadorLikes(
-          parseInt(
-            (Date.now() - response.data.ultimoLikePedidoMaisde24Horas) / 1000
-          )
-        );
-      }
-
-      if (this.ultimoComentarioPedidoMaisde24Horas === false) {
-        this.temporizadorComentarios(
-          parseInt(
-            (Date.now() - response.data.ultimoComentarioPedidoMaisde24Horas) /
-              1000
-          )
-        );
-      }
-
-      if (this.ultimoSeguidoresPedidoMaisde24Horas === false) {
-        this.temporizadorSeguidores(
-          parseInt(
-            (Date.now() - response.data.ultimoSeguidoresPedidoMaisde24Horas) /
-              1000
-          )
-        );
-      }
-    },
     async ganharSeguidores() {
-      this.desativarButtonSeguidores = true;
+      this.ultimoSeguidoresPedidoMaisde24Horas = true;
       let cookie = this.$cookies.get('token');
       let payload = { token: cookie };
       let response = await axios.post('/api/ganhar/seguidores', payload);
@@ -350,14 +294,14 @@ export default {
       this.temporizadorSeguidores(100);
     },
     async ganharlike(id) {
-      this.desativarButtonLike = true;
+      this.ultimoLikePedidoMaisde24Horas = true;
       let cookie = this.$cookies.get('token');
       let payload = { token: cookie, mediaId: id };
       await axios.post('/api/ganhar/likes', payload);
       this.temporizadorLikes(100);
     },
     async ganharComentario(id) {
-      this.desativarButtonComentario = true;
+      this.ultimoComentarioPedidoMaisde24Horas = true;
       let cookie = this.$cookies.get('token');
       let payload = { token: cookie, mediaId: id, comentario: this.comentario };
       await axios.post('/api/ganhar/comentario', payload);
@@ -365,7 +309,6 @@ export default {
       this.temporizadorComentarios(100);
     },
     async temporizadorLikes(duration) {
-
       duration = 60 * 60 * 24 - duration;
 
       let timer = duration,
@@ -432,10 +375,82 @@ export default {
         }
       }, 1000);
     },
+    async infoPerfil() {
+      if (this.modalEdit === '') {
+        this.$router.push('/');
+      }
+      let cookie = this.$cookies.get('token');
+      let payload = { token: cookie };
+      axios.post('/api/infoperfil', payload).then((response) => {
+        this.info = response.data.info;
+      });
+    },
+    async ultimosPedidos() {
+      if (this.modalEdit === '') {
+        this.$router.push('/');
+      }
+      let cookie = this.$cookies.get('token');
+      let payload = { token: cookie };
+      axios.post('/api/pedidos', payload).then((response) => {
+        this.ultimoLikePedidoMaisde24Horas =
+          Date.now() - response.data.ultimoLikePedidoMaisde24Horas >
+          1000 * 60 * 60 * 24
+            ? true
+            : false;
+        this.ultimoSeguidoresPedidoMaisde24Horas =
+          Date.now() - response.data.ultimoSeguidoresPedidoMaisde24Horas >
+          1000 * 60 * 60 * 24
+            ? true
+            : false;
+        this.ultimoComentarioPedidoMaisde24Horas =
+          Date.now() - response.data.ultimoComentarioPedidoMaisde24Horas >
+          1000 * 60 * 60 * 24
+            ? true
+            : false;
+
+        if (this.ultimoLikePedidoMaisde24Horas === false) {
+          this.temporizadorLikes(
+            parseInt(
+              (Date.now() - response.data.ultimoLikePedidoMaisde24Horas) / 1000
+            )
+          );
+        }
+
+        if (this.ultimoComentarioPedidoMaisde24Horas === false) {
+          this.temporizadorComentarios(
+            parseInt(
+              (Date.now() - response.data.ultimoComentarioPedidoMaisde24Horas) /
+                1000
+            )
+          );
+        }
+
+        if (this.ultimoSeguidoresPedidoMaisde24Horas === false) {
+          this.temporizadorSeguidores(
+            parseInt(
+              (Date.now() - response.data.ultimoSeguidoresPedidoMaisde24Horas) /
+                1000
+            )
+          );
+        }
+      });
+    },
+    async buscarTimeLine() {
+      if (this.modalEdit === '') {
+        this.$router.push('/');
+      }
+      let cookie = this.$cookies.get('token');
+      let payload = { token: cookie };
+      axios.post('/api/timeline', payload).then((response) => {
+        this.timeline = response.data.timeline;
+      });
+    },
   },
   async mounted() {
     this.setModalEdit('timeline');
-    await this.checarUsuario();
+    this.infoPerfil();
+    this.ultimosPedidos();
+    this.buscarTimeLine();
   },
 };
 </script>
@@ -455,6 +470,6 @@ p {
   padding: 10px;
   box-shadow: 1px 1px;
   background: white;
-  max-width: 43rem;
+  max-width: 41rem;
 }
 </style>
