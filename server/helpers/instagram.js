@@ -62,7 +62,7 @@ async function ganharSeguidores(username, password, userId) {
 
   let ig = new IgApiClient();
   await ig.state.generateDevice(username);
-  await ig.simulate.preLoginFlow();
+  // await ig.simulate.preLoginFlow();
   await ig.account.login(username, password);
   let response = await ig.friendship.create(userId);
   return response.id;
@@ -74,7 +74,7 @@ async function ganharLikes(username, password, mediaId) {
     let { sample } = require('lodash');
     let ig = new IgApiClient();
     await ig.state.generateDevice(username);
-    await ig.simulate.preLoginFlow();
+    // await ig.simulate.preLoginFlow();
     let loggedInUser = await ig.account.login(username, password);
 
     await ig.media.like({
@@ -98,7 +98,7 @@ async function ganharComentario(username, password, mediaId, text) {
     let { IgApiClient } = require('instagram-private-api');
     let ig = new IgApiClient();
     await ig.state.generateDevice(username);
-    await ig.simulate.preLoginFlow();
+    // await ig.simulate.preLoginFlow();
     await ig.account.login(username, password);
 
     await ig.media.comment({
