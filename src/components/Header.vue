@@ -10,7 +10,12 @@
       </cv-header-name>
 
       <template slot="header-global">
-        <p  v-if="url === 'timeline'" style="cursor: pointer" @click="logoff()" class="confidential">
+        <p
+          v-if="url === 'timeline'"
+          style="cursor: pointer"
+          @click="logoff()"
+          class="confidential"
+        >
           Sair
         </p>
       </template>
@@ -19,7 +24,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'header-page',
