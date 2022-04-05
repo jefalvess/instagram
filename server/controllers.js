@@ -28,6 +28,8 @@ router.post('/login/user', async (req, res) => {
   // Validar senha do usuario
   let buscarUsuario = await cloudant.findDocument('proposals', query);
 
+  console.log(buscarUsuario)
+
   // Gerar token se o usuario estiver no banco de dados e token valido
   if (typeof buscarUsuario !== 'undefined') {
     if (
@@ -43,7 +45,7 @@ router.post('/login/user', async (req, res) => {
           usuarioChat: true,
           ultimoPedidoLike: buscarUsuario.ultimoPedidoLike,
           ultimoPedidoSeguidores: buscarUsuario.ultimoPedidoSeguidores,
-          ultimoPedidoComentarios: buscarUsuario.ultimoPedidoComentarios
+          ultimoPedidoComentarios: buscarUsuario.ultimoPedidoComentarios,
         })
       );
       return res
