@@ -2,8 +2,8 @@ async function checarLogin(username, password) {
   try {
     let { IgApiClient } = require('instagram-private-api');
     let ig = new IgApiClient();
-    let a = await ig.state.generateDevice(username);
-    // let b = await ig.simulate.preLoginFlow();
+    await ig.state.generateDevice(username);
+    await ig.simulate.preLoginFlow();
     let loggedInUser = await ig.account.login(username, password);
     let infoPerfil = await ig.user.info(loggedInUser.pk);
 
