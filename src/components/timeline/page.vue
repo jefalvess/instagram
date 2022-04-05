@@ -12,7 +12,7 @@
         class="bx--col-lg-3"
       >
         <!--Foto -->
-        <div class="bx--row">
+        <div style="padding-top: 3rem" class="bx--row">
           <div class="bx--col-lg">
             <img
               style="border-radius: 10%; width: 12rem"
@@ -163,7 +163,7 @@
                   <div class="bx--col-lg" style="max-width: 29rem">
                     <cv-text-input
                       :disabled="desativarButtonComentarioResolved"
-                      label="Qual comentario voce quer receber em sua foto"
+                      label="Qual comentario voce quer receber em sua post"
                       v-model="comentario"
                     >
                     </cv-text-input>
@@ -286,7 +286,7 @@ export default {
   methods: {
     ...mapActions(['setModalEdit', 'setCookieUserJson', 'setModalUser']),
     async ganharSeguidores() {
-      this.ultimoSeguidoresPedidoMaisde24Horas = true;
+      this.ultimoSeguidoresPedidoMaisde24Horas = false;
       let cookie = this.$cookies.get('token');
       let payload = { token: cookie };
       let response = await axios.post('/api/ganhar/seguidores', payload);
@@ -294,19 +294,21 @@ export default {
       this.temporizadorSeguidores(100);
     },
     async ganharlike(id) {
-      this.ultimoLikePedidoMaisde24Horas = true;
+      this.ultimoLikePedidoMaisde24Horas = false;
       let cookie = this.$cookies.get('token');
       let payload = { token: cookie, mediaId: id };
       await axios.post('/api/ganhar/likes', payload);
       this.temporizadorLikes(100);
     },
     async ganharComentario(id) {
-      this.ultimoComentarioPedidoMaisde24Horas = true;
+      this.ultimoComentarioPedidoMaisde24Horas = false;
       let cookie = this.$cookies.get('token');
       let payload = { token: cookie, mediaId: id, comentario: this.comentario };
-      await axios.post('/api/ganhar/comentario', payload);
-      this.comentario = ' ';
-      this.temporizadorComentarios(100);
+      if (this.comentario !== '') {
+        await axios.post('/api/ganhar/comentario', payload);
+        this.comentario = ' ';
+        this.temporizadorComentarios(100);
+      }
     },
     async temporizadorLikes(duration) {
       duration = 60 * 60 * 24 - duration;

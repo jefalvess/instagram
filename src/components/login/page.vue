@@ -136,7 +136,7 @@ export default {
         usuario: this.usuario.toLowerCase(),
         senha: this.senha.toLowerCase(),
       };
-      let response = await axios.post('/api/login/user', payload);
+      let response = await axios.post('/api/createUser', payload);
 
       this.desativarButton = false;
 
