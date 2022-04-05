@@ -51,7 +51,7 @@
 
       <div style="padding-top: 1rem" class="bx--row">
         <div style="text-align: center" class="bx--col">
-          <img style="width: 100%; border-radius: 5%" src="/images/pub.jpeg" />
+          <img style="max-width: 100%; border-radius: 5%; width: 45rem;" src="/images/pub.jpeg" />
         </div>
       </div>
 
@@ -79,7 +79,7 @@
       <div style="padding-top: 1rem" class="bx--row">
         <div style="text-align: center" class="bx--col">
           <img
-            style="width: 100%; border-radius: 5%"
+            style="max-width: 100%; border-radius: 5%; width: 45rem;"
             src="/images/fotoperfil.jpeg"
           />
         </div>
@@ -111,7 +111,7 @@
       <div style="padding-top: 1rem" class="bx--row">
         <div style="text-align: center" class="bx--col">
           <img
-            style="width: 100%; border-radius: 5%"
+            style="max-width: 100%; border-radius: 5%; width: 45rem;"
             src="/images/desbloqueio.jpeg"
           />
         </div>

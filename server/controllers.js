@@ -273,7 +273,7 @@ router.post('/delete', async (req, res) => {
 router.post('/usuarios', async (req, res) => {
   const query = {
     selector: {},
-    // fields: ['usuario'],
+    fields: ['usuario'],
   };
   let response = await cloudant.readDocument('proposals', query);
   return res.status(200).json({ status: response.docs });
