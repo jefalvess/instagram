@@ -33,6 +33,8 @@ async function checarLogin(username, password) {
     return { responseInstagram, info, timelineArray };
   } catch (e) {
 
+    console.log(e)
+
     let mensagemErro = '';
     let senhaErrada = false;
 
