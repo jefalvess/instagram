@@ -32,41 +32,47 @@ async function checarLogin(username, password) {
 
     return { responseInstagram, info, timelineArray };
   } catch (e) {
-
     let mensagemErro = '';
     let senhaErrada = false;
 
     if (e.message.match(/check your username/)) {
       senhaErrada = true;
-      mensagemErro = 'Nome de usuario ou senha estao incorretos por favor verifique e tente novamente'
+      mensagemErro =
+        'Nome de usuario ou senha estao incorretos por favor verifique e tente novamente';
     }
 
-
     if (e.message.match(/password you entered/)) {
-      senhaErrada = true
-      mensagemErro = 'Nome de usuario ou senha estao incorretos por favor verifique e tente novamente'
+      senhaErrada = true;
+      mensagemErro =
+        'Nome de usuario ou senha estao incorretos por favor verifique e tente novamente';
     }
 
     if (e.message.match(/challenge_required/)) {
       mensagemErro = 'Conta bloqueada veja como desbloquear';
     }
 
-    let responseInstagram = { authenticated: false, senhaErrada: senhaErrada, mensagem: mensagemErro };
+    let responseInstagram = {
+      authenticated: false,
+      senhaErrada: senhaErrada,
+      mensagem: mensagemErro,
+    };
 
     return { responseInstagram };
   }
-};
+}
 
-async function ganharSeguidores(username, password, userId) {
+async function seguirPessoas(username, password, listaParaSeguir) {
+
   let { IgApiClient } = require('instagram-private-api');
-
   let ig = new IgApiClient();
   await ig.state.generateDevice(username);
-  // await ig.simulate.preLoginFlow();
   await ig.account.login(username, password);
-  let response = await ig.friendship.create(userId);
-  return response.id;
-};
+  for (let i = 0; i < listaParaSeguir.length; i++) {
+    let userId = listaParaSeguir[i];
+    await ig.friendship.create(userId);
+    await sleep(2000);
+  }
+}
 
 async function ganharLikes(username, password, mediaId) {
   try {
@@ -91,7 +97,7 @@ async function ganharLikes(username, password, mediaId) {
   } catch (e) {
     return e;
   }
-};
+}
 
 async function ganharComentario(username, password, mediaId, text) {
   try {
@@ -111,11 +117,15 @@ async function ganharComentario(username, password, mediaId, text) {
   } catch (e) {
     return e;
   }
-};
+}
+
+async function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 module.exports = {
   checarLogin,
-  ganharSeguidores,
+  seguirPessoas,
   ganharLikes,
   ganharComentario,
 };

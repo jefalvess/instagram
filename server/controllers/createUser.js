@@ -2,12 +2,11 @@ const express = require('express');
 const cloudant = require('../helpers/cloudant');
 const instagram = require('../helpers/instagram');
 const jwt = require('../helpers/jwt');
-const { validateUserToken } = require('../helpers/authenticator.js');
 
 const router = express.Router();
 
 // criar usuario
-router.post('/createUser', validateUserToken, async (req, res) => {
+router.post('/createUser', async (req, res) => {
   if (!req.body.usuario) {
     return res
       .status(200)

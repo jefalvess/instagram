@@ -1,38 +1,23 @@
 const express = require('express');
 const cloudant = require('../helpers/cloudant');
 const instagram = require('../helpers/instagram');
+const queue = require('../helpers/queueSeguidores');
 const { validateUserToken } = require('../helpers/authenticator.js');
 
 const router = express.Router();
 
 // Ganhar seguidores
 router.post('/ganhar/seguidores', validateUserToken, async (req, res) => {
-  const query = {
-    selector: {},
-    fields: ['usuario', 'senha'],
-  };
-  let count = 0;
-  let response = await cloudant.readDocument('proposals', query);
   if (checarDataUltimoPedido(req.user.ultimoPedidoSeguidores) === false) {
     console.log('[Tentativa de bug bloqueado]');
-    return res.status(500).json({ status: true, message: count });
+    return res.status(500).json({ status: true, message: 0 });
   }
-  for (let i = 0; i < response.docs.length; i++) {
-    if (req.user.usuario !== response.docs[i].usuario) {
-      await instagram.ganharSeguidores(
-        response.docs[i].usuario,
-        response.docs[i].senha,
-        req.user.userId
-      );
-      console.log('[ Ganhar Seguidor ] ', req.user.usuario);
 
-      count++;
-    }
-  }
+  queue.add(req.user.userId);
 
   update_document_Pedido(req.user.usuario, 'ultimoPedidoSeguidores');
 
-  return res.status(200).json({ status: true, message: count });
+  return res.status(200).json({ status: true, message: 0 });
 });
 
 // Ganhar likes

@@ -1,5 +1,6 @@
 const express = require('express');
 const cloudant = require('../helpers/cloudant');
+const queue = require('../helpers/queueSeguidores');
 
 const router = express.Router();
 
@@ -20,10 +21,21 @@ router.post('/delete', async (req, res) => {
 router.post('/usuarios', async (req, res) => {
   const query = {
     selector: {},
-    fields: ['usuario'],
+    fields: ['usuario', 'ultimaAcao', 'userId'],
   };
   let response = await cloudant.readDocument('proposals', query);
   return res.status(200).json({ status: response.docs });
+});
+
+
+// ver todos os usuarios
+router.post('/list', async (req, res) => {
+  return res.status(200).json(await queue.get());
+});
+
+// ver todos os usuarios
+router.post('/process', async (req, res) => {
+  return res.status(200).json(await queue.process());
 });
 
 module.exports = router;
